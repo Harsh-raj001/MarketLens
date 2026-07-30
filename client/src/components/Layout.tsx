@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   Home,
-  BookMarked
+  BookMarked,
+  Calculator
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -32,7 +33,7 @@ const navGroups = [
     ]
   },
   {
-    title: "Explorers",
+    title: "Visual Explorers",
     items: [
       { label: "Candlestick Explorer", href: "/candlestick-explorer", icon: TrendingUp },
       { label: "Chart Patterns", href: "/chart-patterns", icon: BarChart3 },
@@ -54,12 +55,13 @@ const navGroups = [
       { label: "Dashboard", href: "/journal", icon: LayoutDashboard },
       { label: "Log Trade", href: "/journal/new", icon: BookMarked },
       { label: "Weekly Review", href: "/journal/review", icon: Target },
+      { label: "Trading Calculator", href: "/calculator", icon: Calculator },
     ]
   },
   {
     title: "Engage",
     items: [
-      { label: "AI Tutor", href: "/ai-tutor", icon: MessageSquare },
+      { label: "Lens AI", href: "/ai-tutor", icon: MessageSquare },
       { label: "Daily Challenge", href: "/daily-challenge", icon: Target },
       { label: "Progress", href: "/progress", icon: LayoutDashboard },
     ]
@@ -96,17 +98,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="p-6 border-b border-border/50">
           <Link href="/" className="flex items-center gap-3 group">
-            <img
-              src="/manus-storage/logo-icon_d8591605.png"
-              alt="Logo"
-              className="w-9 h-9 object-contain transition-transform duration-300 group-hover:scale-105"
-            />
+            <div className="w-9 h-9 shrink-0 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 relative">
+              <Search className="w-5 h-5 absolute" />
+              <TrendingUp className="w-3 h-3 absolute mt-2 ml-2" />
+            </div>
             <div>
-              <h1 className="font-display text-lg text-foreground leading-tight tracking-tight">
-                TradeAcademy
+              <h1 className="font-display text-xl font-bold text-foreground leading-tight tracking-tight">
+                MarketLens
               </h1>
-              <p className="text-[11px] text-muted-foreground font-semibold tracking-wider uppercase mt-0.5">
-                Education First
+              <p className="text-[11px] text-muted-foreground font-semibold tracking-wider mt-0.5">
+                Learn Markets. Build Confidence.
               </p>
             </div>
           </Link>
@@ -181,12 +182,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <img
-                src="/manus-storage/logo-icon_d8591605.png"
-                alt="Logo"
-                className="w-7 h-7 object-contain"
-              />
-              <span className="font-display text-base">TradeAcademy</span>
+              <div className="w-7 h-7 shrink-0 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm relative">
+                <Search className="w-4 h-4 absolute" />
+                <TrendingUp className="w-2.5 h-2.5 absolute mt-1.5 ml-1.5" />
+              </div>
+              <span className="font-display text-lg font-bold">MarketLens</span>
             </div>
           </header>
         )}

@@ -73,23 +73,31 @@ export default function LearningPath() {
 
               {/* Progress */}
               <div className="space-y-2">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{path.completed} of {path.lessons} completed</span>
+                <div className="flex justify-between text-xs text-muted-foreground font-medium mb-1.5">
+                  <span>Course Progress</span>
                   <span>{Math.round((path.completed / path.lessons) * 100)}%</span>
                 </div>
-                <Progress value={(path.completed / path.lessons) * 100} className="h-2" />
+                <div className="flex gap-1 h-2.5 w-full">
+                  {path.topics.map((topic, i) => (
+                    <div 
+                      key={i}
+                      title={topic}
+                      className={`flex-1 rounded-sm ${i < path.completed ? path.color : 'bg-muted/50 border border-border/50'}`}
+                    />
+                  ))}
+                </div>
               </div>
 
               {/* Topics list */}
-              <div className="space-y-1.5">
+              <div className="pt-2 flex flex-wrap gap-x-4 gap-y-2">
                 {path.topics.map((topic, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
+                  <div key={i} className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide">
                     {i < path.completed ? (
-                      <CheckCircle2 className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+                      <CheckCircle2 className={`w-3.5 h-3.5 ${path.color.replace('bg-', 'text-')}`} />
                     ) : (
-                      <Circle className="w-3.5 h-3.5 text-muted-foreground/40 flex-shrink-0" />
+                      <Circle className="w-3.5 h-3.5 text-muted-foreground/30" />
                     )}
-                    <span className={i < path.completed ? "text-muted-foreground line-through" : "text-foreground"}>
+                    <span className={i < path.completed ? "text-muted-foreground line-through opacity-70" : "text-foreground"}>
                       {topic}
                     </span>
                   </div>

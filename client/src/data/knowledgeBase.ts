@@ -4,6 +4,7 @@ export interface LessonSpecification {
   visualComponent?: string; // E.g., "Hammer", "RSI", "HeadAndShoulders"
   reliability?: number; // 1-5
   marketContext?: string;
+  marketStory?: string[];
   psychology?: string;
   failureCases?: string;
   historicalExample?: {
@@ -13,6 +14,7 @@ export interface LessonSpecification {
     outcome: string;
     explanation: string;
   };
+  calculator?: boolean; // Toggles the TradingCostCalculator module
   quiz?: {
     question: string;
     options: string[];
@@ -28,6 +30,14 @@ export const sampleResponses: Record<string, LessonSpecification> = {
     visualComponent: "Hammer",
     reliability: 4,
     marketContext: "Must appear after a confirmed downtrend.",
+    marketStory: [
+      "Sellers controlled the market for three sessions.",
+      "Buyers slowly absorbed the selling pressure.",
+      "Panic selling faded.",
+      "Institutions stepped in.",
+      "A Hammer formed.",
+      "Bulls confirmed the reversal."
+    ],
     psychology: "Sellers pushed the price down significantly during the session, but buyers stepped in aggressively, absorbing all the selling pressure and pushing the price back up near the open. This shows a massive shift in momentum from bears to bulls.",
     failureCases: "A Hammer can fail if the overall market context is in a strong, high-volume downtrend, or if the next candle gaps down and breaks below the wick low.",
     historicalExample: {
@@ -101,6 +111,14 @@ export const sampleResponses: Record<string, LessonSpecification> = {
     visualComponent: "HeadAndShoulders",
     reliability: 4,
     marketContext: "Forms at the top of an uptrend.",
+    marketStory: [
+      "Bulls push to a new high, forming the left shoulder.",
+      "Profit taking causes a minor pullback.",
+      "A euphoric rally creates the highest peak (the head).",
+      "But momentum fades rapidly as sellers take over.",
+      "A final, weaker rally forms the right shoulder.",
+      "Support breaks, triggering widespread panic selling."
+    ],
     psychology: "Buyers create a new high (left shoulder), then push even higher (head), but fail to maintain the momentum. The final push (right shoulder) fails to reach the head's peak, showing severe exhaustion before a breakdown below the neckline.",
     failureCases: "A 'fake breakdown' where price drops just below the neckline to stop out traders, then immediately surges back into an uptrend.",
     quiz: {
@@ -143,6 +161,19 @@ export const sampleResponses: Record<string, LessonSpecification> = {
       question: "A bullish MACD signal occurs when:",
       options: ["The MACD line crosses below the Signal line", "The MACD line crosses above the Signal line", "The histogram is red", "The RSI is above 70"],
       correctAnswer: 1
+    }
+  },
+  "trading costs": {
+    topic: "Real Trading Costs & Taxes",
+    description: "In Indian markets, brokerage is just one part of the cost. The government and exchanges levy several non-negotiable charges that heavily impact short-term trading profitability.",
+    calculator: true,
+    reliability: 5,
+    psychology: "Beginners often over-trade on tiny margins, thinking they are making a profit. However, because of STT (Securities Transaction Tax) and Stamp Duty, a 0.2% price move might result in a net loss after taxes. Always calculate your break-even point before entering a trade.",
+    failureCases: "Selling delivery shares (holdings) incurs a flat DP charge (around ₹15.93 per scrip) regardless of quantity. Selling 1 share of a ₹50 stock for a ₹5 profit will result in a net loss of ~₹11 because of the DP charge.",
+    quiz: {
+      question: "Which charge is typically the highest tax on equity delivery trades in India?",
+      options: ["Brokerage", "Exchange Transaction Charge", "Securities Transaction Tax (STT)", "SEBI Turnover Fee"],
+      correctAnswer: 2
     }
   }
 };

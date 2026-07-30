@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { LessonSpecification } from "@/data/knowledgeBase";
 import { Hammer, Doji, Engulfing, MorningStar, EveningStar, ShootingStar, Harami, Marubozu } from "@/components/visuals/Candles";
-import { HeadAndShoulders, Triangle, Flag, Pennant, DoubleTop, DoubleBottom, CupAndHandle } from "@/components/visuals/ChartPatterns";
-import { RSI, MACD, BollingerBands } from "@/components/visuals/Indicators";
+import { HeadAndShoulders, InverseHeadAndShoulders, Triangle, Flag, DoubleTop, DoubleBottom, CupAndHandle, AscendingTriangle, DescendingTriangle, Pennant, Wedge, Rectangle } from "@/components/visuals/ChartPatterns";
+import { RSI, MACD, BollingerBands, VWAP, EMA, SMA, ATR, ADX } from "@/components/visuals/Indicators";
 import { HistoricalReplay } from "./HistoricalReplay";
+import { TradingCalculator } from "./TradingCalculator";
 import { Brain, Star, CheckCircle2, XCircle, AlertTriangle, Lightbulb } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useProgress } from "@/contexts/ProgressContext";
@@ -11,6 +12,7 @@ import { motion, Variants } from "framer-motion";
 
 interface LessonRendererProps {
   lesson: LessonSpecification;
+  onTopicClick?: (topic: string) => void;
 }
 
 const containerVariants: Variants = {
@@ -26,7 +28,7 @@ const itemVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
 };
 
-export function LessonRenderer({ lesson }: LessonRendererProps) {
+export function LessonRenderer({ lesson, onTopicClick }: LessonRendererProps) {
   const { completeDailyChallenge } = useProgress();
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [quizSubmitted, setQuizSubmitted] = useState(false);
@@ -44,9 +46,14 @@ export function LessonRenderer({ lesson }: LessonRendererProps) {
       case "Marubozu": return <Marubozu />;
       // Patterns
       case "HeadAndShoulders": return <HeadAndShoulders />;
+      case "InverseHeadAndShoulders": return <InverseHeadAndShoulders />;
       case "Triangle": return <Triangle />;
+      case "AscendingTriangle": return <AscendingTriangle />;
+      case "DescendingTriangle": return <DescendingTriangle />;
       case "Flag": return <Flag />;
       case "Pennant": return <Pennant />;
+      case "Wedge": return <Wedge />;
+      case "Rectangle": return <Rectangle />;
       case "DoubleTop": return <DoubleTop />;
       case "DoubleBottom": return <DoubleBottom />;
       case "CupAndHandle": return <CupAndHandle />;
@@ -54,6 +61,11 @@ export function LessonRenderer({ lesson }: LessonRendererProps) {
       case "RSI": return <RSI />;
       case "MACD": return <MACD />;
       case "BollingerBands": return <BollingerBands />;
+      case "VWAP": return <VWAP />;
+      case "EMA": return <EMA />;
+      case "SMA": return <SMA />;
+      case "ATR": return <ATR />;
+      case "ADX": return <ADX />;
       default: return null;
     }
   };
@@ -85,16 +97,41 @@ export function LessonRenderer({ lesson }: LessonRendererProps) {
             </div>
           )}
         </div>
-        <p className="text-muted-foreground leading-relaxed text-lg">
-          {lesson.description}
-        </p>
         
+        {/* VISUAL FIRST: Show visual or calculator before text */}
         {lesson.visualComponent && (
-          <div className="bg-card border border-border/60 rounded-xl overflow-hidden mt-4 shadow-sm">
+          <div className="bg-card border border-border/60 rounded-xl overflow-visible mt-6 mb-4 shadow-sm relative z-20">
             {renderVisual()}
           </div>
         )}
+        
+        {lesson.calculator && (
+          <div className="mt-6 mb-4 relative z-20">
+            <TradingCalculator />
+          </div>
+        )}
+
+        {/* Text content follows the visual */}
+        <p className="text-muted-foreground leading-relaxed text-lg pt-4">
+          {lesson.description}
+        </p>
       </motion.div>
+
+      {/* Market Story */}
+      {lesson.marketStory && (
+        <motion.div variants={itemVariants} className="space-y-4 pt-2 pb-4 border-l-2 border-primary/30 pl-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Lightbulb className="w-5 h-5 text-primary" />
+            <h3 className="font-semibold text-foreground">Market Story</h3>
+          </div>
+          {lesson.marketStory.map((step, i) => (
+            <div key={i} className="flex gap-3 items-start text-sm">
+              <span className="w-5 h-5 flex-shrink-0 flex items-center justify-center rounded-full bg-primary/10 text-primary text-[10px] font-bold mt-0.5">{i + 1}</span>
+              <p className="text-muted-foreground leading-relaxed pt-0.5">{step}</p>
+            </div>
+          ))}
+        </motion.div>
+      )}
 
       {/* Psychology */}
       {lesson.psychology && (
@@ -201,13 +238,18 @@ export function LessonRenderer({ lesson }: LessonRendererProps) {
 
       {/* Related Topics */}
       {lesson.relatedTopics && lesson.relatedTopics.length > 0 && (
-        <motion.div variants={itemVariants} className="pt-4 border-t border-border/60">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Related Topics</p>
-          <div className="flex flex-wrap gap-2">
+        <motion.div variants={itemVariants} className="pt-8 mt-8 border-t border-border/60">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Continue Learning</p>
+          <div className="flex flex-col gap-2">
             {lesson.relatedTopics.map((topic, i) => (
-              <span key={i} className="px-3 py-1.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
+              <button 
+                key={i} 
+                onClick={() => onTopicClick && onTopicClick(topic)}
+                className="flex items-center gap-2 px-4 py-3 rounded-lg border border-border/50 bg-secondary/30 hover:bg-secondary text-sm font-medium transition-colors text-left group"
+              >
+                <Lightbulb className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
                 {topic}
-              </span>
+              </button>
             ))}
           </div>
         </motion.div>

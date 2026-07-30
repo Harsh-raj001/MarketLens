@@ -29,6 +29,9 @@ export function CommandPalette() {
         e.preventDefault()
         setOpen((open) => !open)
       }
+      if (e.key === "Escape") {
+        setOpen(false)
+      }
     }
     document.addEventListener("keydown", down)
     return () => document.removeEventListener("keydown", down)
@@ -42,10 +45,14 @@ export function CommandPalette() {
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-in fade-in flex items-start justify-center pt-[15vh]">
+    <div 
+      className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm animate-in fade-in flex items-start justify-center pt-[15vh]"
+      onClick={() => setOpen(false)}
+    >
       <Command
         className="w-full max-w-lg bg-card rounded-xl border border-border shadow-2xl overflow-hidden"
         label="Global Command Menu"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center border-b border-border px-3">
           <Search className="w-5 h-5 text-muted-foreground mr-2" />
@@ -66,7 +73,7 @@ export function CommandPalette() {
               onSelect={() => runCommand(() => setLocation("/ai-tutor"))}
               className="flex items-center gap-2 px-2 py-2 rounded-lg text-sm text-foreground cursor-pointer hover:bg-primary/5 hover:text-primary data-[selected=true]:bg-primary/5 data-[selected=true]:text-primary"
             >
-              <MessageSquare className="w-4 h-4" /> AI Tutor
+              <MessageSquare className="w-4 h-4" /> Lens AI
             </Command.Item>
             <Command.Item
               onSelect={() => runCommand(() => setLocation("/journal"))}

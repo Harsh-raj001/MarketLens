@@ -25,7 +25,7 @@ export default function AITutor() {
     {
       id: 0,
       role: "assistant",
-      content: "Welcome to the AI Tutor! I am an AI-native learning platform. Ask me about a trading concept, and I'll generate a complete interactive lesson for you. Try asking about a 'Hammer' or 'RSI'.",
+      content: "Welcome to Lens AI! I am an AI-native learning platform. Ask me about a trading concept, and I'll generate a complete interactive lesson for you. Try asking about a 'Hammer' or 'RSI'.",
     },
   ]);
   const [input, setInput] = useState("");
@@ -40,9 +40,31 @@ export default function AITutor() {
       return "I'm sorry, but I can't provide buy/sell signals or investment recommendations. This platform is strictly for educational purposes. I can help you understand concepts, analyze patterns, and learn risk management principles. Would you like to ask about a specific trading concept instead?";
     }
 
+    // Check for calculator
+    if (lower.includes("profit") || lower.includes("cost") || lower.includes("brokerage") || lower.includes("tax") || lower.includes("charges")) {
+      if (sampleResponses["trading costs"]) {
+        return sampleResponses["trading costs"];
+      }
+    }
+
+    // Pseudo-semantic search intent mapping
+    const intentMap: Record<string, string> = {
+      "fake breakout": "head and shoulders",
+      "fake breakdown": "head and shoulders",
+      "indecision": "doji",
+      "momentum": "rsi",
+      "reversal": "hammer",
+    };
+    
+    for (const [intent, key] of Object.entries(intentMap)) {
+      if (lower.includes(intent)) {
+        return sampleResponses[key];
+      }
+    }
+
     // Try to find a structured lesson specification
     for (const [key, lesson] of Object.entries(sampleResponses)) {
-      if (lower.includes(key)) {
+      if (lower.includes(key.toLowerCase())) {
         return lesson;
       }
     }
@@ -79,7 +101,7 @@ export default function AITutor() {
           <Bot className="w-5 h-5 text-primary" />
         </div>
         <div>
-          <h1 className="font-display text-2xl text-foreground">Interactive AI Tutor</h1>
+          <h1 className="font-display text-2xl text-foreground">Interactive Lens AI</h1>
           <p className="text-sm text-muted-foreground">Dynamic visual learning platform</p>
         </div>
       </div>
@@ -88,7 +110,7 @@ export default function AITutor() {
       <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200">
         <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-amber-800">
-          This AI tutor is for educational purposes only. It does not provide buy/sell signals or investment advice.
+          Lens AI is for educational purposes only. It does not provide buy/sell signals or investment advice.
         </p>
       </div>
 
@@ -112,9 +134,9 @@ export default function AITutor() {
               }`}
             >
               {typeof msg.content === "string" ? (
-                <div className="leading-relaxed">{msg.content}</div>
+                <span className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</span>
               ) : (
-                <LessonRenderer lesson={msg.content} />
+                <LessonRenderer lesson={msg.content} onTopicClick={handleSend} />
               )}
             </div>
             {msg.role === "user" && (

@@ -26,6 +26,8 @@ import Dashboard from "./pages/journal/Dashboard";
 import NewTrade from "./pages/journal/NewTrade";
 import TradeDetail from "./pages/journal/TradeDetail";
 import WeeklyReview from "./pages/journal/WeeklyReview";
+import TradingCalculatorPage from "./pages/TradingCalculatorPage";
+import CalculatorStub from "./pages/CalculatorStub";
 
 function Router() {
   return (
@@ -84,6 +86,12 @@ function Router() {
       </Route>
       <Route path="/journal/review">
         <Layout><WeeklyReview /></Layout>
+      </Route>
+      <Route path="/calculator">
+        <Layout><TradingCalculatorPage /></Layout>
+      </Route>
+      <Route path="/calculator-stub">
+        <Layout><CalculatorStub /></Layout>
       </Route>
       <Route path="/404">
         <NotFound />

@@ -15,7 +15,7 @@ interface Message {
 export default function FloatingAIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "ai", content: "Hi! I'm your AI Trading Tutor. Ask me about candlesticks, patterns, indicators, or market psychology." }
+    { role: "ai", content: "Hi! I'm Lens AI. Ask me about candlesticks, patterns, indicators, or market psychology." }
   ]);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -41,21 +41,30 @@ export default function FloatingAIChat() {
         return;
       }
 
+      // Check for profit/costs calculator
+      if (lowerInput.includes("profit") || lowerInput.includes("cost") || lowerInput.includes("brokerage") || lowerInput.includes("tax") || lowerInput.includes("charges")) {
+        setMessages((prev) => [...prev, { 
+          role: "ai", 
+          content: `**Real Trading Costs**: Brokerage is just one part of the cost. The government and exchanges levy several non-negotiable charges that heavily impact short-term trading profitability.\n\nI have a built-in Trading Cost Calculator! Open the Interactive Lens AI to see exactly how STT, GST, and Stamp Duty affect your net profit.` 
+        }]);
+        return;
+      }
+
       // Check sampleResponses
       let found = false;
       for (const [key, lesson] of Object.entries(sampleResponses)) {
-        if (lowerInput.includes(key)) {
+        if (lowerInput.includes(key.toLowerCase())) {
           found = true;
           setMessages((prev) => [...prev, { 
             role: "ai", 
-            content: `**${lesson.topic}**: ${lesson.description}\n\nI have a full interactive visual lesson on this! Open the Interactive AI Tutor to see the chart, psychology, and historical examples.` 
+            content: `**${lesson.topic}**: ${lesson.description}\n\nI have a full interactive visual lesson on this! Open the Interactive Lens AI to see the chart, psychology, and historical examples.` 
           }]);
           break;
         }
       }
 
       if (!found) {
-        setMessages((prev) => [...prev, { role: "ai", content: "I'm not sure about that. Try asking about a 'Hammer', 'Doji', 'Engulfing', or 'RSI'." }]);
+        setMessages((prev) => [...prev, { role: "ai", content: "I'm not sure about that. Try asking about a 'Hammer', 'Doji', 'Engulfing', 'RSI', or 'Trading Costs'." }]);
       }
     }, 500);
   };
@@ -67,7 +76,7 @@ export default function FloatingAIChat() {
           <div className="flex items-center justify-between p-4 bg-primary text-primary-foreground">
             <div className="flex items-center gap-2">
               <Bot className="w-5 h-5" />
-              <span className="font-display">AI Tutor</span>
+              <span className="font-display">Lens AI</span>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-primary-foreground hover:bg-primary/90 hover:text-white">
               <X className="w-4 h-4" />
@@ -80,7 +89,7 @@ export default function FloatingAIChat() {
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[85%] p-3 rounded-xl ${msg.role === "user" ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-muted text-foreground rounded-tl-sm"}`}>
                     <span className="text-sm whitespace-pre-wrap">{msg.content}</span>
-                    {msg.role === "ai" && msg.content.includes("Interactive AI Tutor") && (
+                    {msg.role === "ai" && msg.content.includes("Interactive Lens AI") && (
                       <Link href="/ai-tutor">
                         <Button variant="outline" size="sm" className="mt-3 w-full gap-2 text-xs h-8" onClick={() => setIsOpen(false)}>
                           Open Full Lesson <ExternalLink className="w-3 h-3" />

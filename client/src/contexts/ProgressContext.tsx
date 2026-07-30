@@ -18,7 +18,14 @@ const ProgressContext = createContext<ProgressContextType | undefined>(undefined
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const [progress, setProgress] = useState<ProgressState>(() => {
     try {
-      const stored = localStorage.getItem("tradeacademy_progress");
+      let stored = localStorage.getItem("marketlens_progress");
+      if (!stored) {
+        stored = localStorage.getItem("tradeacademy_progress");
+        if (stored) {
+          localStorage.setItem("marketlens_progress", stored);
+          localStorage.removeItem("tradeacademy_progress");
+        }
+      }
       if (stored) return JSON.parse(stored);
     } catch (e) {
       console.error("Failed to parse progress from local storage");
@@ -32,7 +39,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-    localStorage.setItem("tradeacademy_progress", JSON.stringify(progress));
+    localStorage.setItem("marketlens_progress", JSON.stringify(progress));
   }, [progress]);
 
   const addXp = (amount: number) => {

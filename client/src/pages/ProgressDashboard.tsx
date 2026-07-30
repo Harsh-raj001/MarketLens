@@ -47,7 +47,7 @@ export default function ProgressDashboard() {
             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2">
               <BookOpen className="w-8 h-8 text-primary" />
             </div>
-            <h2 className="font-display text-2xl text-foreground">Welcome to TradeAcademy</h2>
+            <h2 className="font-display text-2xl text-foreground">Welcome to MarketLens</h2>
             <p className="text-muted-foreground">
               You haven't completed any lessons yet. Start with Candlesticks or Market Psychology to build your first learning streak.
             </p>

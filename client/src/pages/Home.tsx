@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const features = [
   {
     icon: MessageSquare,
-    title: "AI-Powered Tutor",
+    title: "Lens AI",
     description: "Ask any trading question and get educational answers grounded in verified knowledge. No signals, no advice — just clarity.",
     href: "/ai-tutor",
   },
@@ -58,21 +58,23 @@ const features = [
   },
 ];
 
-const modules = [
-  { icon: Brain, label: "Market Psychology", href: "/psychology", desc: "Fear, Greed, FOMO, Bias" },
-  { icon: Shield, label: "Risk Management", href: "/risk-management", desc: "Position sizing, Stop losses" },
-  { icon: BookOpen, label: "Fundamentals", href: "/fundamentals", desc: "P/E, EPS, ROE, GDP, Inflation" },
-  { icon: LayoutDashboard, label: "Progress Dashboard", href: "/progress", desc: "Track your learning journey" },
+const tools = [
+  { icon: Target, label: "Trading Cost Calculator", href: "/calculator", desc: "Calculate exact fees & taxes" },
+  { icon: Shield, label: "Position Size Calculator", href: "/calculator-stub", desc: "Calculate shares based on risk" },
+  { icon: TrendingUp, label: "Risk Reward Calculator", href: "/calculator-stub", desc: "R:R ratio & break-even" },
+  { icon: BarChart3, label: "Compounding Calculator", href: "/calculator-stub", desc: "Long-term portfolio growth" },
+  { icon: BookMarked, label: "Pip Calculator", href: "/calculator-stub", desc: "Calculate pip value" },
+  { icon: Search, label: "Margin Calculator", href: "/calculator-stub", desc: "Calculate required margin" },
 ];
 
 export default function Home() {
   const [demoStep, setDemoStep] = useState(0);
 
-  // Auto-play the hero demo
+  // Auto-play the hero demo (0 to 5)
   useEffect(() => {
     const timer = setInterval(() => {
-      setDemoStep((prev) => (prev >= 2 ? 0 : prev + 1));
-    }, 4000);
+      setDemoStep((prev) => (prev >= 5 ? 0 : prev + 1));
+    }, 2500); // Faster sequence so they don't wait too long
     return () => clearInterval(timer);
   }, []);
 
@@ -83,12 +85,12 @@ export default function Home() {
         <div className="space-y-8 relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
             <Sparkles className="w-4 h-4" />
-            AI-Native Learning Platform
+            AI-Powered Trading Education
           </div>
           <h1 className="font-display text-5xl lg:text-6xl xl:text-[4.5rem] leading-[1.1] text-foreground tracking-tight">
-            Learn to trade. <br />
+            Learn Markets.<br />
             <span className="text-primary relative inline-block mt-2">
-              Visually.
+              Build Confidence.
               <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 100 10" preserveAspectRatio="none">
                 <path d="M0 5 Q 50 15 100 5" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
               </svg>
@@ -101,7 +103,7 @@ export default function Home() {
           <div className="flex flex-wrap gap-4 pt-4">
             <Link href="/ai-tutor">
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground h-14 px-8 text-base shadow-lg shadow-primary/20 transition-all card-hover">
-                Try the AI Tutor <ArrowRight className="w-5 h-5 ml-2" />
+                Try Lens AI <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
             <div className="flex items-center gap-2 text-sm text-muted-foreground px-4 py-2 bg-muted/50 rounded-xl border border-border/50">
@@ -124,9 +126,9 @@ export default function Home() {
                  <div className="mx-auto w-3/4 bg-background border border-border/50 rounded-md h-7 flex items-center px-3 gap-2">
                    <Command className="w-3 h-3 text-muted-foreground" />
                    <span className="text-xs text-muted-foreground font-mono">
-                     {demoStep === 0 ? "Type a question..." : "Explain Head and Shoulders"}
+                     {demoStep === 0 ? "Type a question..." : "Why did this Hammer fail?"}
                    </span>
-                   {demoStep === 1 && (
+                   {demoStep === 0 && (
                      <motion.span 
                        initial={{ opacity: 0 }} 
                        animate={{ opacity: [0, 1, 0] }} 
@@ -139,46 +141,59 @@ export default function Home() {
              </div>
 
              {/* Dynamic Content Area */}
-             <div className="flex-1 p-6 relative overflow-hidden bg-gradient-to-b from-background to-muted/10 flex flex-col items-center justify-center">
+             <div className="flex-1 p-6 relative overflow-hidden bg-gradient-to-b from-background to-muted/10 flex flex-col items-center justify-start overflow-y-auto no-scrollbar">
                <AnimatePresence mode="wait">
-                 {demoStep < 2 ? (
+                 {demoStep === 0 && (
                    <motion.div
                      key="waiting"
-                     initial={{ opacity: 0 }}
-                     animate={{ opacity: 1 }}
-                     exit={{ opacity: 0, scale: 0.95 }}
-                     className="flex flex-col items-center justify-center text-muted-foreground"
+                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                     className="flex flex-col items-center justify-center text-muted-foreground mt-20"
                    >
-                     <Brain className="w-12 h-12 mb-4 opacity-20" />
-                     <p className="text-sm">AI is ready to teach.</p>
+                     <Brain className="w-12 h-12 mb-4 opacity-20 animate-pulse" />
+                     <p className="text-sm">Listening...</p>
                    </motion.div>
-                 ) : (
+                 )}
+                 {demoStep > 0 && demoStep < 5 && (
+                    <motion.div
+                      key={`loading-${demoStep}`}
+                      initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
+                      className="flex flex-col items-center justify-center text-muted-foreground mt-20 space-y-6"
+                    >
+                      <Brain className="w-12 h-12 text-primary animate-pulse" />
+                      <div className="flex flex-col items-center gap-2">
+                        {demoStep >= 1 && <span className="text-sm font-mono text-primary">Thinking...</span>}
+                        {demoStep >= 2 && <span className="text-sm font-mono">Finding lesson...</span>}
+                        {demoStep >= 3 && <span className="text-sm font-mono">Loading historical example...</span>}
+                        {demoStep >= 4 && <span className="text-sm font-mono">Building visualization...</span>}
+                      </div>
+                    </motion.div>
+                  )}
+                 {demoStep === 5 && (
                    <motion.div
                      key="lesson"
                      initial={{ opacity: 0, y: 20 }}
                      animate={{ opacity: 1, y: 0 }}
-                     transition={{ duration: 0.5, staggerChildren: 0.1 }}
-                     className="w-full max-w-sm space-y-4"
+                     transition={{ duration: 0.5, staggerChildren: 0.2 }}
+                     className="w-full space-y-4 pb-4"
                    >
-                     {/* Topic */}
                      <motion.h3 
                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} 
-                       className="font-display text-xl text-foreground text-center"
+                       className="font-display text-xl text-foreground"
                      >
-                       Head and Shoulders
+                       Hammer Candlestick
                      </motion.h3>
                      
                      {/* SVG Visual */}
                      <motion.div 
-                       initial={{ scale: 0.9, opacity: 0 }} 
+                       initial={{ scale: 0.95, opacity: 0 }} 
                        animate={{ scale: 1, opacity: 1 }} 
-                       className="bg-background border border-border rounded-xl p-4 shadow-sm flex justify-center"
+                       className="bg-background border border-border rounded-xl p-4 shadow-sm flex flex-col items-center"
                      >
-                       <svg width="200" height="120" viewBox="0 0 150 100">
-                          <line x1="10" y1="75" x2="140" y2="75" stroke="#475569" strokeWidth="1" strokeDasharray="3 3" />
-                          <path d="M 10 85 L 30 40 L 45 70 L 75 15 L 105 70 L 120 40 L 140 85" fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                          <text x="70" y="10" fontSize="5" fill="#4f46e5" fontWeight="bold">Head</text>
+                       <svg width="100" height="100" viewBox="0 0 100 100">
+                          <line x1="50" y1="20" x2="50" y2="90" stroke="#059669" strokeWidth="4" strokeLinecap="round" />
+                          <rect x="35" y="25" width="30" height="20" fill="#10b981" rx="2" stroke="#047857" strokeWidth="2" />
                        </svg>
+                       <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full mt-2 font-semibold">Hover to highlight</span>
                      </motion.div>
 
                      {/* Psychology Box */}
@@ -192,9 +207,25 @@ export default function Home() {
                          <span className="text-xs font-semibold text-amber-900 dark:text-amber-500">Psychology</span>
                        </div>
                        <p className="text-[10px] text-amber-800/80 dark:text-amber-200/80 leading-relaxed">
-                         The final push (right shoulder) fails to reach the head's peak, showing severe exhaustion before a breakdown.
+                         Bears pushed the price down significantly, but bulls stepped in and completely overpowered them before the close, creating the long lower wick.
                        </p>
                      </motion.div>
+
+                     {/* Historical Box Stub */}
+                     <motion.div 
+                       initial={{ y: 10, opacity: 0 }} 
+                       animate={{ y: 0, opacity: 1 }} 
+                       className="bg-card border border-border/60 rounded-lg p-3 flex gap-3 items-center shadow-sm"
+                     >
+                       <div className="w-10 h-10 rounded bg-emerald-500/10 flex items-center justify-center shrink-0">
+                         <TrendingUp className="w-5 h-5 text-emerald-500" />
+                       </div>
+                       <div>
+                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">NIFTY • 12 Feb 2025</p>
+                         <p className="text-xs font-semibold">Price rallied +4% after Hammer</p>
+                       </div>
+                     </motion.div>
+                     
                    </motion.div>
                  )}
                </AnimatePresence>
@@ -283,6 +314,29 @@ export default function Home() {
                </div>
              </div>
           </div>
+        </div>
+      </section>
+
+      {/* Popular Tools */}
+      <section className="space-y-10 border-t border-border/50 pt-16">
+        <div className="text-center max-w-2xl mx-auto space-y-4">
+          <h2 className="font-display text-3xl md:text-4xl text-foreground tracking-tight">Trading Toolkit</h2>
+          <p className="text-muted-foreground text-lg">Calculate exactly what you risk and what you pay.</p>
+        </div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tools.map((t, i) => (
+            <Link key={i} href={t.href}>
+              <Card className="h-full border-border/60 bg-card hover:border-primary/30 transition-all duration-300 card-hover cursor-pointer group">
+                <CardContent className="p-6 space-y-4">
+                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                    <t.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-semibold text-foreground text-sm">{t.label}</h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{t.desc}</p>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </section>
     </div>
