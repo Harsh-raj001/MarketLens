@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search, Check, ArrowRight
+  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search, Check, ArrowRight, Calculator
 } from "lucide-react";
 
 // --- Custom 3D Card Wrapper ---
@@ -63,7 +63,7 @@ export default function Home() {
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
 
   // Smooth scroll springs
-  const smoothY = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
+  const smoothY = useSpring(scrollYProgress, { stiffness: 400, damping: 40 });
 
   // Section 1: Hero [0 to 0.25]
   const s1Scale = useTransform(smoothY, [0, 0.2], [1, 0.95]);
@@ -84,7 +84,7 @@ export default function Home() {
   const s4Y = useTransform(smoothY, [0.65, 0.75], ["100vh", "0vh"]);
 
   return (
-    <div ref={containerRef} className="h-[400vh] bg-background">
+    <div ref={containerRef} className="h-[250vh] bg-background">
       <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
         <PremiumBackground />
 
@@ -222,21 +222,23 @@ function VisualSection() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {[
-          { title: "Candlestick Explorer", desc: "40+ single and multi-candle patterns drawn stroke-by-stroke.", svg: <rect x="30" y="20" width="40" height="60" fill="#10b981" rx="4" /> },
-          { title: "Chart Patterns", desc: "W-bottoms, M-tops, and Triangles animated with price lines.", svg: <polyline points="10,80 30,30 50,70 70,20 90,50" fill="none" stroke="#6366f1" strokeWidth="6" /> },
-          { title: "Indicators", desc: "MACD, RSI, and moving averages simplified visually.", svg: <circle cx="50" cy="50" r="30" fill="none" stroke="#ef4444" strokeWidth="6" strokeDasharray="10 10" /> }
+          { title: "Candlestick Explorer", desc: "40+ single and multi-candle patterns drawn stroke-by-stroke.", href: "/candlestick-explorer", svg: <rect x="30" y="20" width="40" height="60" fill="#10b981" rx="4" /> },
+          { title: "Chart Patterns", desc: "W-bottoms, M-tops, and Triangles animated with price lines.", href: "/chart-patterns", svg: <polyline points="10,80 30,30 50,70 70,20 90,50" fill="none" stroke="#6366f1" strokeWidth="6" /> },
+          { title: "Indicators", desc: "MACD, RSI, and moving averages simplified visually.", href: "/indicator-explorer", svg: <circle cx="50" cy="50" r="30" fill="none" stroke="#ef4444" strokeWidth="6" strokeDasharray="10 10" /> }
         ].map((item, i) => (
-          <TiltCard key={i}>
-            <div className="bg-card border border-border/60 rounded-2xl p-8 h-full shadow-lg group">
-              <div className="h-40 bg-background rounded-xl border border-border/50 mb-6 flex items-center justify-center overflow-hidden">
-                <svg viewBox="0 0 100 100" className="w-20 h-20 opacity-80 group-hover:scale-110 transition-transform duration-500">
-                  {item.svg}
-                </svg>
+          <Link key={i} href={item.href}>
+            <TiltCard>
+              <div className="bg-card border border-border/60 rounded-2xl p-8 h-full shadow-lg group cursor-pointer">
+                <div className="h-40 bg-background rounded-xl border border-border/50 mb-6 flex items-center justify-center overflow-hidden">
+                  <svg viewBox="0 0 100 100" className="w-20 h-20 opacity-80 group-hover:scale-110 transition-transform duration-500">
+                    {item.svg}
+                  </svg>
+                </div>
+                <h3 className="font-semibold text-xl mb-2 flex items-center gap-2">{item.title} <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" /></h3>
+                <p className="text-muted-foreground">{item.desc}</p>
               </div>
-              <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
-              <p className="text-muted-foreground">{item.desc}</p>
-            </div>
-          </TiltCard>
+            </TiltCard>
+          </Link>
         ))}
       </div>
     </div>
@@ -258,23 +260,30 @@ function ToolkitSection() {
             </li>
           ))}
         </ul>
-        <Button className="mt-8 rounded-full" size="lg">Open Calculators</Button>
+        <Link href="/calculator">
+          <Button className="mt-8 rounded-full" size="lg">Open True Cost Calculator</Button>
+        </Link>
       </div>
 
       <div className="grid gap-4">
-        {[1, 2, 3].map(i => (
-          <motion.div key={i} whileHover={{ x: 10 }} className="bg-card border border-border/60 rounded-xl p-6 flex items-center justify-between shadow-sm cursor-pointer">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
-                <Target className="w-6 h-6" />
+        {[
+          { title: "True Cost Calculator", desc: "See exactly how much you pay in taxes & fees", href: "/calculator", icon: Calculator },
+          { title: "Position Sizing", desc: "Calculate exact shares based on risk", href: "/calculator-stub", icon: Target }
+        ].map((item, i) => (
+          <Link key={i} href={item.href}>
+            <motion.div whileHover={{ x: 10 }} className="bg-card border border-border/60 rounded-xl p-6 flex items-center justify-between shadow-sm cursor-pointer group">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                  <item.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h4 className="font-semibold">{item.title}</h4>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold">Calculator Widget {i}</h4>
-                <p className="text-sm text-muted-foreground">Detailed breakdown simulation</p>
-              </div>
-            </div>
-            <ArrowRight className="w-5 h-5 text-muted-foreground" />
-          </motion.div>
+              <ArrowRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </motion.div>
+          </Link>
         ))}
       </div>
     </div>
@@ -291,24 +300,28 @@ function LearningSection() {
       </div>
 
       <div className="grid md:grid-cols-2 gap-8 w-full max-w-4xl">
-        <TiltCard>
-          <div className="bg-card p-10 rounded-2xl border border-border/60 text-center space-y-4 shadow-lg group">
-            <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-              <BookOpen className="w-8 h-8" />
+        <Link href="/paths">
+          <TiltCard>
+            <div className="bg-card p-10 rounded-2xl border border-border/60 text-center space-y-4 shadow-lg group cursor-pointer h-full">
+              <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                <BookOpen className="w-8 h-8" />
+              </div>
+              <h3 className="font-display text-2xl flex items-center justify-center gap-2">Learning Paths <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" /></h3>
+              <p className="text-muted-foreground">Structured courses with progress tracking and quizzes.</p>
             </div>
-            <h3 className="font-display text-2xl">Learning Paths</h3>
-            <p className="text-muted-foreground">Structured courses with progress tracking and quizzes.</p>
-          </div>
-        </TiltCard>
-        <TiltCard>
-          <div className="bg-card p-10 rounded-2xl border border-border/60 text-center space-y-4 shadow-lg group">
-            <div className="w-16 h-16 bg-purple-500/10 text-purple-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
-              <Brain className="w-8 h-8" />
+          </TiltCard>
+        </Link>
+        <Link href="/journal">
+          <TiltCard>
+            <div className="bg-card p-10 rounded-2xl border border-border/60 text-center space-y-4 shadow-lg group cursor-pointer h-full">
+              <div className="w-16 h-16 bg-purple-500/10 text-purple-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+                <Brain className="w-8 h-8" />
+              </div>
+              <h3 className="font-display text-2xl flex items-center justify-center gap-2">Trade Log <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 transition-opacity" /></h3>
+              <p className="text-muted-foreground">Track mistakes, emotions, and daily insights.</p>
             </div>
-            <h3 className="font-display text-2xl">Trade Log</h3>
-            <p className="text-muted-foreground">Track mistakes, emotions, and daily insights.</p>
-          </div>
-        </TiltCard>
+          </TiltCard>
+        </Link>
       </div>
     </div>
   );

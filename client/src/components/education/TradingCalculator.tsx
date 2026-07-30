@@ -3,21 +3,77 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Info, Download, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { Info, Brain, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const EXPLANATIONS: Record<string, { title: string, collector: string, why: string, when: string }> = {
+  grossProfit: {
+    title: "Gross Profit",
+    collector: "You (Temporarily)",
+    why: "This is the raw difference between your buy and sell price multiplied by quantity.",
+    when: "Always calculated first, before any taxes, fees, or broker charges are deducted."
+  },
+  brokerage: {
+    title: "Brokerage Fee",
+    collector: "Your Broker (e.g., Zerodha, Upstox)",
+    why: "This is the service fee your broker charges for providing the trading platform and executing your order.",
+    when: "Usually ₹20 flat or 0.03% (whichever is lower) for Intraday/F&O. Most discount brokers charge ₹0 for Equity Delivery."
+  },
+  stt: {
+    title: "Securities Transaction Tax (STT)",
+    collector: "Government of India",
+    why: "A direct tax levied on every purchase and sale of securities listed on recognized stock exchanges in India.",
+    when: "Applies heavily to Equity Delivery (0.1% on both buy and sell). For Intraday/F&O, it only applies to the sell side."
+  },
+  exchangeTxn: {
+    title: "Exchange Transaction Charges",
+    collector: "Stock Exchange (NSE / BSE)",
+    why: "The fee charged by the exchange for matching your buy and sell orders on their infrastructure.",
+    when: "Applies to every single executed order (both buy and sell) across all segments."
+  },
+  dpCharges: {
+    title: "Depository Participant (DP) Charges",
+    collector: "Depository (CDSL / NSDL) & Broker",
+    why: "Charged when shares are debited (removed) from your Demat account.",
+    when: "Only applies when you SELL shares in Equity Delivery. Never applies to Intraday or F&O because shares never enter your Demat account."
+  },
+  stampDuty: {
+    title: "Stamp Duty",
+    collector: "State Government",
+    why: "A tax levied by the state on the transfer of financial instruments.",
+    when: "Only applies to the BUY side of the transaction. Never charged on selling."
+  },
+  gst: {
+    title: "Goods and Services Tax (GST)",
+    collector: "Government of India",
+    why: "Standard 18% service tax applied to financial services.",
+    when: "Calculated as 18% of the sum of (Brokerage + Exchange Charges + SEBI Charges)."
+  },
+  sebiCharges: {
+    title: "SEBI Turnover Fees",
+    collector: "Securities and Exchange Board of India (SEBI)",
+    why: "Used to fund the regulatory body that monitors and protects the Indian stock markets.",
+    when: "Applies to all trades at a flat rate of ₹10 per crore of turnover."
+  },
+  netProfit: {
+    title: "Net Profit",
+    collector: "You (Permanently)",
+    why: "The actual money that hits your bank account after the government, the exchange, and your broker have all taken their cut.",
+    when: "This is the only number that matters for your trading journal and tax returns."
+  }
+};
 
 export function TradingCalculator() {
   const [buyPrice, setBuyPrice] = useState<number | "">(100);
   const [sellPrice, setSellPrice] = useState<number | "">(105);
   const [quantity, setQuantity] = useState<number | "">(100);
-  const [segment, setSegment] = useState("delivery"); // delivery, intraday, futures, options
+  const [segment, setSegment] = useState("delivery"); 
+  const [activeCharge, setActiveCharge] = useState<string>("stt");
 
   const bp = buyPrice === "" ? 0 : buyPrice;
   const sp = sellPrice === "" ? 0 : sellPrice;
   const qty = quantity === "" ? 0 : quantity;
 
-  // Basic MVP Indian market calculator logic (Discount broker rates)
   const turnover = (bp + sp) * qty;
   const grossProfit = (sp - bp) * qty;
 
@@ -28,17 +84,17 @@ export function TradingCalculator() {
   let stampDuty = 0;
 
   if (segment === "delivery") {
-    brokerage = 0; // Discount brokers usually 0 for delivery
-    stt = Math.round(turnover * 0.001); // 0.1% on both buy and sell
+    brokerage = 0; 
+    stt = Math.round(turnover * 0.001); 
     exchangeTxn = turnover * 0.0000345;
-    stampDuty = (bp * qty) * 0.00015; // 0.015% only on buy side
-    dpCharges = 15.93; // Flat ₹13.5 + 18% GST on sell side only
+    stampDuty = (bp * qty) * 0.00015; 
+    dpCharges = 15.93; 
   } else if (segment === "intraday") {
-    brokerage = Math.min(20, turnover * 0.0003) * 2; // Flat 20 or 0.03% (buy & sell)
-    stt = Math.round((sp * qty) * 0.00025); // 0.025% on sell side only
+    brokerage = Math.min(20, turnover * 0.0003) * 2; 
+    stt = Math.round((sp * qty) * 0.00025); 
     exchangeTxn = turnover * 0.0000345;
-    stampDuty = (bp * qty) * 0.00003; // 0.003% on buy side
-    dpCharges = 0; // No DP charges for intraday
+    stampDuty = (bp * qty) * 0.00003; 
+    dpCharges = 0; 
   } else if (segment === "futures") {
     brokerage = Math.min(20, turnover * 0.0003) * 2;
     stt = Math.round((sp * qty) * 0.000125);
@@ -46,30 +102,41 @@ export function TradingCalculator() {
     stampDuty = (bp * qty) * 0.00002;
     dpCharges = 0;
   } else if (segment === "options") {
-    brokerage = 40; // Flat ₹20 per executed order (buy + sell)
-    stt = Math.round((sp * qty) * 0.000625); // on premium
+    brokerage = 40; 
+    stt = Math.round((sp * qty) * 0.000625); 
     exchangeTxn = turnover * 0.00053;
     stampDuty = (bp * qty) * 0.00003;
     dpCharges = 0;
   }
 
-  const sebiCharges = turnover * 0.000001; // ₹10 per crore
-  const gst = (brokerage + exchangeTxn + sebiCharges) * 0.18; // 18% on brokerage + txn + sebi
+  const sebiCharges = turnover * 0.000001; 
+  const gst = (brokerage + exchangeTxn + sebiCharges) * 0.18; 
 
-  // DP charges already include GST in our simple calculation above.
   const totalTaxesAndCharges = brokerage + stt + exchangeTxn + sebiCharges + stampDuty + gst + (segment === "delivery" && grossProfit !== 0 ? dpCharges : 0);
   const netProfit = grossProfit - totalTaxesAndCharges;
 
   const formatCurrency = (val: number) => `₹${val.toFixed(2)}`;
 
+  const getChargeValue = (id: string): number => {
+    switch (id) {
+      case "brokerage": return brokerage;
+      case "stt": return stt;
+      case "exchangeTxn": return exchangeTxn;
+      case "sebiCharges": return sebiCharges;
+      case "stampDuty": return stampDuty;
+      case "gst": return gst;
+      case "dpCharges": return dpCharges;
+      default: return 0;
+    }
+  };
+
   return (
     <div className="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 my-6 text-slate-100 shadow-2xl relative overflow-hidden">
-      {/* Background glow */}
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/20 rounded-full blur-3xl opacity-50" />
       
-      <div className="relative z-10 grid md:grid-cols-2 gap-8">
+      <div className="relative z-10 grid lg:grid-cols-2 gap-8">
         
-        {/* Input Section */}
+        {/* Left Column: Inputs & Receipt */}
         <div className="space-y-6">
           <div>
             <h3 className="text-2xl font-display text-white mb-2">Real Trading Costs</h3>
@@ -114,88 +181,129 @@ export function TradingCalculator() {
             </div>
           </div>
           
-          <div className="bg-blue-900/20 border border-blue-500/20 rounded-lg p-3 flex gap-3 text-blue-200 text-xs">
-            <Info className="w-4 h-4 shrink-0 mt-0.5 text-blue-400" />
-            <p>Calculations use standard discount broker rates (e.g., Zerodha) and current government/exchange rates. Actual charges may vary.</p>
-          </div>
-        </div>
-
-        {/* Output Section (Receipt Style) */}
-        <div className="bg-slate-950/50 rounded-xl border border-slate-800 p-6 font-mono text-sm">
-          <div className="text-center pb-4 border-b border-slate-800 border-dashed mb-4">
-            <h4 className="text-slate-400 uppercase tracking-widest text-xs mb-1">Contract Note Breakdown</h4>
-            <div className={`text-2xl font-bold ${grossProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-              {grossProfit >= 0 ? "+" : ""}{formatCurrency(grossProfit)}
+          {/* Interactive Receipt */}
+          <div className="bg-slate-950/50 rounded-xl border border-slate-800 p-6 font-mono text-sm relative">
+            <div className="text-center pb-4 border-b border-slate-800 border-dashed mb-4">
+              <h4 className="text-slate-400 uppercase tracking-widest text-xs mb-1">Contract Note Breakdown</h4>
+              <div 
+                className={`text-2xl font-bold cursor-pointer transition-colors ${activeCharge === 'grossProfit' ? 'text-white' : grossProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}
+                onClick={() => setActiveCharge('grossProfit')}
+              >
+                {grossProfit >= 0 ? "+" : ""}{formatCurrency(grossProfit)}
+              </div>
+              <div className="text-slate-500 text-xs mt-1">Click any row for AI explanation ↗</div>
             </div>
-            <div className="text-slate-500 text-xs">Gross P&L</div>
-          </div>
 
-          <div className="space-y-3">
-            <ChargeRow label="Brokerage" value={brokerage} tooltip="Fee charged by your broker for facilitating the trade." />
-            <ChargeRow label="STT/CTT" value={stt} tooltip="Securities Transaction Tax collected by the Government of India." />
-            <ChargeRow label="Exchange Txn Chg" value={exchangeTxn} tooltip="Fee charged by NSE/BSE." />
-            <ChargeRow label="SEBI Charges" value={sebiCharges} tooltip="Fee collected by the regulatory body, SEBI." />
-            <ChargeRow label="Stamp Duty" value={stampDuty} tooltip="State government tax on buying securities." />
-            <ChargeRow label="GST" value={gst} tooltip="18% tax on Brokerage, Exchange & SEBI charges." />
-            {segment === "delivery" && (
-              <ChargeRow label="DP Charges" value={dpCharges} tooltip="Charged by Depository (CDSL/NSDL) when selling delivery shares." />
-            )}
-          </div>
+            <div className="space-y-1">
+              <ChargeRow id="brokerage" label="Brokerage" value={brokerage} active={activeCharge} onClick={setActiveCharge} />
+              <ChargeRow id="stt" label="STT/CTT" value={stt} active={activeCharge} onClick={setActiveCharge} />
+              <ChargeRow id="exchangeTxn" label="Exchange Txn Chg" value={exchangeTxn} active={activeCharge} onClick={setActiveCharge} />
+              <ChargeRow id="sebiCharges" label="SEBI Charges" value={sebiCharges} active={activeCharge} onClick={setActiveCharge} />
+              <ChargeRow id="stampDuty" label="Stamp Duty" value={stampDuty} active={activeCharge} onClick={setActiveCharge} />
+              <ChargeRow id="gst" label="GST" value={gst} active={activeCharge} onClick={setActiveCharge} />
+              {segment === "delivery" && (
+                <ChargeRow id="dpCharges" label="DP Charges" value={dpCharges} active={activeCharge} onClick={setActiveCharge} />
+              )}
+            </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-800 border-dashed">
-            <div className="flex justify-between items-center text-slate-300">
-              <span>Total Charges:</span>
+            <div className="mt-4 pt-4 border-t border-slate-800 border-dashed flex justify-between items-center text-slate-300 px-2">
+              <span>Total Taxes & Fees:</span>
               <span className="text-red-400">-{formatCurrency(totalTaxesAndCharges)}</span>
             </div>
-          </div>
 
-          <div className="mt-4 pt-4 border-t border-slate-700 flex justify-between items-center text-lg">
-            <span className="font-sans font-bold text-white">Net P&L:</span>
-            <span className={`font-bold ${netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
-              {netProfit >= 0 ? "+" : ""}{formatCurrency(netProfit)}
-            </span>
+            <div 
+              className={`mt-4 pt-4 border-t border-slate-700 flex justify-between items-center text-lg px-2 cursor-pointer rounded-lg p-2 transition-colors ${activeCharge === 'netProfit' ? 'bg-primary/20 ring-1 ring-primary' : 'hover:bg-slate-800/50'}`}
+              onClick={() => setActiveCharge('netProfit')}
+            >
+              <span className="font-sans font-bold text-white">Net P&L:</span>
+              <span className={`font-bold ${netProfit >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                {netProfit >= 0 ? "+" : ""}{formatCurrency(netProfit)}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Educational Narrative */}
-        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="md:col-span-2 mt-2">
-          <div className="bg-slate-900 border border-slate-700 rounded-xl p-5 shadow-inner">
-            <h4 className="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
-              <ChevronRight className="w-4 h-4 text-primary" /> What does this mean?
-            </h4>
-            <p className="text-sm text-slate-400 leading-relaxed font-serif italic">
-              Out of your {formatCurrency(Math.abs(grossProfit))} {grossProfit >= 0 ? 'profit' : 'loss'}, 
-              a total of <span className="text-red-400 font-semibold">{formatCurrency(totalTaxesAndCharges)}</span> went to taxes and fees.
-              {stt > 0 && ` The largest chunk was STT at ${formatCurrency(stt)}.`}
-              {brokerage > 0 && ` Your broker took ${formatCurrency(brokerage)}.`}
-              <br/><br/>
-              <strong className="text-slate-300 font-sans not-italic">Key Takeaway:</strong> High-frequency trading or small point scalping can quickly turn a winning strategy into a net loss once fees are applied.
-            </p>
-            
-            <div className="mt-6 flex justify-end">
-              <Button variant="outline" className="bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white group">
-                <Download className="w-4 h-4 mr-2 group-hover:-translate-y-0.5 transition-transform" />
-                Download PDF Summary
-              </Button>
+        {/* Right Column: AI Explainer Module */}
+        <div className="flex flex-col h-full">
+          <div className="flex-1 bg-card border border-border/60 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <div className="h-12 border-b border-border/50 bg-muted/30 flex items-center px-4 backdrop-blur-md gap-3">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-border" />
+                <div className="w-3 h-3 rounded-full bg-border" />
+                <div className="w-3 h-3 rounded-full bg-border" />
+              </div>
+              <div className="flex-1 bg-background border border-border/50 rounded-md h-7 flex items-center px-3 gap-2">
+                <Sparkles className="w-3 h-3 text-primary" />
+                <span className="text-xs text-muted-foreground font-mono">Lens AI Explainer</span>
+              </div>
+            </div>
+
+            <div className="flex-1 p-8 relative overflow-hidden bg-gradient-to-b from-background to-muted/10">
+              <AnimatePresence mode="wait">
+                <motion.div 
+                  key={activeCharge}
+                  initial={{ opacity: 0, y: 10 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="h-full flex flex-col"
+                >
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
+                      <Brain className="w-6 h-6 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-display text-foreground">{EXPLANATIONS[activeCharge].title}</h4>
+                      <p className="text-sm font-medium text-primary mt-1">Collected by: {EXPLANATIONS[activeCharge].collector}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6 flex-1">
+                    <div className="space-y-2">
+                      <h5 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                        <Info className="w-4 h-4" /> Why does this exist?
+                      </h5>
+                      <p className="text-foreground leading-relaxed">
+                        {EXPLANATIONS[activeCharge].why}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h5 className="text-sm font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                        <Info className="w-4 h-4" /> When does it apply?
+                      </h5>
+                      <p className="text-foreground leading-relaxed">
+                        {EXPLANATIONS[activeCharge].when}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {activeCharge !== 'netProfit' && activeCharge !== 'grossProfit' && (
+                    <div className="mt-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-sm text-amber-700 dark:text-amber-300">
+                      <strong>AI Tip:</strong> This charge ate <span className="font-bold">{formatCurrency(getChargeValue(activeCharge))}</span> of your profit on this specific trade setup. 
+                    </div>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
-        </motion.div>
+        </div>
 
       </div>
     </div>
   );
 }
 
-function ChargeRow({ label, value, tooltip }: { label: string, value: number, tooltip: string }) {
+function ChargeRow({ id, label, value, active, onClick }: { id: string, label: string, value: number, active: string, onClick: (id: string) => void }) {
+  const isActive = active === id;
+  
   return (
-    <div className="flex justify-between items-center group relative cursor-help">
-      <span className="text-slate-400 border-b border-dotted border-slate-600">{label}</span>
-      <span className="text-slate-300">{value.toFixed(2)}</span>
-      
-      {/* Tooltip on hover */}
-      <div className="absolute left-0 -top-10 hidden group-hover:block z-20 w-48 bg-slate-800 text-slate-200 text-[10px] p-2 rounded shadow-xl border border-slate-700 font-sans">
-        {tooltip}
-      </div>
+    <div 
+      onClick={() => onClick(id)}
+      className={`flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer transition-all duration-200 ${isActive ? 'bg-primary/20 ring-1 ring-primary' : 'hover:bg-slate-800/50'}`}
+    >
+      <span className={`border-b border-dotted ${isActive ? 'text-white border-transparent' : 'text-slate-400 border-slate-600'}`}>{label}</span>
+      <span className={isActive ? 'text-white font-bold' : 'text-slate-300'}>{value.toFixed(2)}</span>
     </div>
   );
 }
