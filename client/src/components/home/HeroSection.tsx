@@ -35,12 +35,12 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1, ease: "easeOut" }}
-            className="relative z-10 font-serif text-6xl md:text-8xl lg:text-[7rem] tracking-tight text-foreground font-extrabold mb-8 leading-[1.05]"
+            className="relative z-10 font-serif text-5xl sm:text-6xl md:text-8xl lg:text-[7rem] tracking-tight text-foreground font-extrabold mb-8 leading-[1.05]"
           >
             Don't just trade. <br />
             <span className="relative inline-block text-teal-600">
               Understand.
-              <div className="absolute -bottom-6 left-0 w-full pointer-events-none">
+              <div className="absolute -bottom-4 md:-bottom-6 left-0 w-full pointer-events-none">
                 <DoodleUnderline className="w-full text-teal-400 opacity-50" />
               </div>
             </span>

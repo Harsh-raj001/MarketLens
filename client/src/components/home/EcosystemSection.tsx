@@ -100,6 +100,40 @@ export function EcosystemSection() {
           ))}
         </div>
 
+        {/* Mobile View (Grid Fallback) */}
+        <div className="md:hidden mt-8 grid grid-cols-2 gap-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            onClick={() => handleNodeClick('lensy')}
+            className="col-span-2 bg-teal-500 rounded-[2rem] p-6 flex items-center gap-4 text-white shadow-lg cursor-pointer"
+          >
+            <LensyLogo className="w-12 h-12 text-white shrink-0" animated />
+            <div>
+              <div className="font-serif font-bold text-xl">MarketLens</div>
+              <div className="text-teal-100 text-sm">Your AI Companion</div>
+            </div>
+          </motion.div>
+          
+          {nodes.filter(n => n.href !== 'lensy').map((node, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 * i }}
+              onClick={() => handleNodeClick(node.href)}
+              className="bg-white border border-slate-100 rounded-2xl p-4 flex flex-col items-center justify-center gap-2 text-slate-700 shadow-sm hover:shadow-md cursor-pointer"
+            >
+              <div className="bg-teal-50/50 p-2.5 rounded-xl text-teal-600">
+                <node.icon className="w-6 h-6" />
+              </div>
+              <span className="text-sm font-bold text-center">{node.label}</span>
+            </motion.div>
+          ))}
+        </div>
+
       </div>
     </section>
   );

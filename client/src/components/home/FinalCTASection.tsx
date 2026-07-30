@@ -10,7 +10,7 @@ export function FinalCTASection() {
   };
 
   return (
-    <section className="py-40 bg-background relative overflow-hidden flex justify-center items-center">
+    <section className="py-24 md:py-40 bg-background relative overflow-hidden flex justify-center items-center">
       {/* Playful Doodle Canvas Background */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-10 left-10 md:left-40 opacity-70">
@@ -35,7 +35,7 @@ export function FinalCTASection() {
           transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
           className="space-y-12"
         >
-          <h2 className="font-serif text-5xl md:text-7xl font-extrabold text-slate-900 leading-[1.1]">
+          <h2 className="font-serif text-4xl md:text-6xl lg:text-7xl font-extrabold text-slate-900 leading-[1.1]">
             Markets don't reward people who memorize.
             <br />
             <span className="relative inline-block mt-4">

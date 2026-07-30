@@ -39,7 +39,7 @@ function ShowcaseBlock({ title, badge, icon: Icon, description, bullets, ctaText
           viewport={{ once: true, margin: "-100px" }}
           transition={{ delay: 0.1 }}
         >
-          <h3 className="font-serif text-5xl md:text-6xl font-extrabold text-foreground mb-6 leading-[1.1]">{title}</h3>
+          <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl font-extrabold text-foreground mb-6 leading-[1.1]">{title}</h3>
           <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-lg">{description}</p>
         </motion.div>
 
@@ -90,7 +90,7 @@ function ShowcaseBlock({ title, badge, icon: Icon, description, bullets, ctaText
         className="flex-1 w-full relative z-10"
       >
         <div className="absolute inset-0 bg-gradient-to-tr from-teal-50 to-emerald-50 rounded-[2rem] -rotate-3 scale-105 opacity-50" />
-        <div className="relative bg-white/80 backdrop-blur-xl border border-white/80 rounded-[2rem] shadow-[0_20px_50px_rgba(15,23,42,0.05)] overflow-hidden min-h-[400px]">
+        <div className="relative bg-white/80 backdrop-blur-xl border border-white/80 rounded-[2rem] shadow-[0_20px_50px_rgba(15,23,42,0.05)] overflow-hidden min-h-[300px] md:min-h-[400px]">
           {mockUI}
         </div>
       </motion.div>
