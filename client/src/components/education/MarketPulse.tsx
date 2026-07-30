@@ -76,22 +76,22 @@ export function MarketPulse() {
 
       {/* Educational Modal */}
       <Dialog open={!!selectedAsset} onOpenChange={(open) => !open && setSelectedAsset(null)}>
-        <DialogContent className="sm:max-w-[500px] bg-slate-900 border-slate-800 text-slate-100">
+        <DialogContent className="sm:max-w-[500px] bg-card border-border/60 text-foreground">
           {selectedAsset && (
             <>
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2 text-2xl font-display">
                   {selectedAsset.name}
-                  <span className="text-xs font-mono px-2 py-1 bg-slate-800 rounded-full text-slate-400 font-normal">
+                  <span className="text-xs font-mono px-2 py-1 bg-muted rounded-full text-muted-foreground font-normal">
                     {selectedAsset.type}
                   </span>
                 </DialogTitle>
               </DialogHeader>
               
               <div className="py-6 space-y-6">
-                <div className="flex justify-between items-end border-b border-slate-800 pb-6">
+                <div className="flex justify-between items-end border-b border-border/50 pb-6">
                   <div>
-                    <div className="text-sm text-slate-400 mb-1">Current Value</div>
+                    <div className="text-sm text-muted-foreground mb-1">Current Value</div>
                     <div className="text-4xl font-bold font-mono">
                       {selectedAsset.value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                     </div>
@@ -109,12 +109,21 @@ export function MarketPulse() {
                   <h4 className="text-primary font-semibold mb-2 flex items-center gap-2 relative z-10">
                     <Info className="w-4 h-4" /> What is this?
                   </h4>
-                  <p className="text-slate-300 leading-relaxed relative z-10">
+                  <p className="text-muted-foreground leading-relaxed relative z-10">
                     {selectedAsset.desc}
                   </p>
                   
                   <div className="mt-6 pt-4 border-t border-primary/20 relative z-10">
-                    <Button variant="outline" className="w-full bg-slate-900/50 border-primary/30 hover:bg-primary/20 hover:text-white">
+                    <Button 
+                      variant="outline" 
+                      className="w-full bg-background/50 border-primary/30 hover:bg-primary/10 text-primary"
+                      onClick={() => {
+                        const event = new CustomEvent('open-lens-ai', { 
+                          detail: { prompt: `What is ${selectedAsset.name} and why is it important to track?` }
+                        });
+                        window.dispatchEvent(event);
+                      }}
+                    >
                       <Brain className="w-4 h-4 mr-2" /> Ask Lens AI to explain {selectedAsset.name} deeper
                     </Button>
                   </div>

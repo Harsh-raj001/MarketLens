@@ -9,7 +9,7 @@ export interface LegendType {
   name: string;
   title: string;
   imageColor: string; // Tailwind class
-  quote: string;
+  quotes: string[];
   philosophy: string;
   famousInvestments: string[];
   mistakesWarned: string;
@@ -18,30 +18,50 @@ export interface LegendType {
 
 export function LegendCard({ legend }: { legend: LegendType }) {
   const [expanded, setExpanded] = useState(false);
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  // Rotate quotes every 8 seconds
+  useState(() => {
+    const interval = setInterval(() => {
+      setQuoteIndex((prev) => (prev + 1) % legend.quotes.length);
+    }, 8000);
+    return () => clearInterval(interval);
+  });
 
   return (
-    <Card className="bg-slate-900 border-slate-800 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-xl group">
+    <Card className="bg-card border-border/60 rounded-2xl overflow-hidden hover:border-primary/50 transition-all duration-300 shadow-xl group">
       <div className="p-6 md:p-8">
         <div className="flex flex-col md:flex-row gap-8 items-start">
           
           {/* Portrait Placeholder */}
-          <div className={`w-32 h-32 shrink-0 rounded-2xl ${legend.imageColor} flex items-center justify-center border-4 border-slate-800 shadow-inner overflow-hidden relative group-hover:scale-105 transition-transform duration-500`}>
+          <div className={`w-32 h-32 shrink-0 rounded-2xl ${legend.imageColor} flex items-center justify-center border border-border/50 shadow-inner overflow-hidden relative group-hover:scale-105 transition-transform duration-500`}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            <span className="text-4xl font-display font-bold text-white/80 relative z-10">{legend.name.charAt(0)}</span>
+            <span className="text-4xl font-display font-bold text-white relative z-10">{legend.name.charAt(0)}</span>
           </div>
 
           <div className="flex-1 space-y-4">
             <div>
-              <h3 className="text-3xl font-display text-white">{legend.name}</h3>
+              <h3 className="text-3xl font-display text-foreground">{legend.name}</h3>
               <p className="text-primary font-medium">{legend.title}</p>
             </div>
 
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-5 relative italic">
-              <Quote className="absolute top-3 left-3 w-8 h-8 text-slate-600 opacity-20" />
-              <p className="text-slate-300 text-lg relative z-10 pl-6 border-l-2 border-primary/50">"{legend.quote}"</p>
+            <div className="bg-primary/5 border border-primary/10 rounded-xl p-5 relative italic h-[100px] flex items-center">
+              <Quote className="absolute top-3 left-3 w-8 h-8 text-primary/10" />
+              <AnimatePresence mode="wait">
+                <motion.p 
+                  key={quoteIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-foreground text-lg relative z-10 pl-6 border-l-2 border-primary/50"
+                >
+                  "{legend.quotes[quoteIndex]}"
+                </motion.p>
+              </AnimatePresence>
             </div>
             
-            <p className="text-slate-400 leading-relaxed text-sm md:text-base">
+            <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
               {legend.philosophy}
             </p>
 
@@ -49,8 +69,10 @@ export function LegendCard({ legend }: { legend: LegendType }) {
               variant="outline" 
               className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20"
               onClick={() => {
-                // Here we would trigger the Lens AI context
-                alert(`Lens AI: Let me break down ${legend.name}'s philosophy into actionable steps...`);
+                const event = new CustomEvent('open-lens-ai', { 
+                  detail: { prompt: `Explain ${legend.name}'s philosophy with examples: ${legend.philosophy}` }
+                });
+                window.dispatchEvent(event);
               }}
             >
               <Sparkles className="w-4 h-4 mr-2" /> Explain this philosophy
@@ -60,10 +82,10 @@ export function LegendCard({ legend }: { legend: LegendType }) {
       </div>
 
       {/* Expandable Section */}
-      <div className="border-t border-slate-800 bg-slate-900/50">
+      <div className="border-t border-border/50 bg-muted/30">
         <button 
           onClick={() => setExpanded(!expanded)} 
-          className="w-full p-4 flex items-center justify-center gap-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800/50 transition-colors"
+          className="w-full p-4 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
         >
           {expanded ? <><ChevronUp className="w-4 h-4" /> Hide details</> : <><ChevronDown className="w-4 h-4" /> View Famous Investments & Warnings</>}
         </button>
@@ -79,12 +101,12 @@ export function LegendCard({ legend }: { legend: LegendType }) {
               <div className="p-6 md:p-8 pt-0 grid md:grid-cols-2 gap-8">
                 
                 <div className="space-y-4">
-                  <h4 className="text-white font-semibold flex items-center gap-2 border-b border-slate-800 pb-2">
-                    <TrendingUp className="w-4 h-4 text-emerald-400" /> Famous Investments
+                  <h4 className="text-foreground font-semibold flex items-center gap-2 border-b border-border/50 pb-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-500" /> Famous Investments
                   </h4>
                   <ul className="space-y-2">
                     {legend.famousInvestments.map((inv, i) => (
-                      <li key={i} className="text-slate-400 text-sm flex items-start gap-2">
+                      <li key={i} className="text-muted-foreground text-sm flex items-start gap-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 mt-1.5 shrink-0" />
                         {inv}
                       </li>
@@ -94,22 +116,22 @@ export function LegendCard({ legend }: { legend: LegendType }) {
 
                 <div className="space-y-8">
                   <div className="space-y-4">
-                    <h4 className="text-white font-semibold flex items-center gap-2 border-b border-slate-800 pb-2">
-                      <AlertTriangle className="w-4 h-4 text-amber-400" /> Common Mistakes Warned Against
+                    <h4 className="text-foreground font-semibold flex items-center gap-2 border-b border-border/50 pb-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-500" /> Common Mistakes Warned Against
                     </h4>
-                    <p className="text-slate-400 text-sm leading-relaxed">
+                    <p className="text-muted-foreground text-sm leading-relaxed">
                       {legend.mistakesWarned}
                     </p>
                   </div>
 
                   {legend.recommendedBooks.length > 0 && (
                     <div className="space-y-4">
-                      <h4 className="text-white font-semibold flex items-center gap-2 border-b border-slate-800 pb-2">
-                        <BookOpen className="w-4 h-4 text-blue-400" /> Recommended Books
+                      <h4 className="text-foreground font-semibold flex items-center gap-2 border-b border-border/50 pb-2">
+                        <BookOpen className="w-4 h-4 text-blue-500" /> Recommended Books
                       </h4>
                       <ul className="space-y-2">
                         {legend.recommendedBooks.map((book, i) => (
-                          <li key={i} className="text-slate-400 text-sm flex items-start gap-2">
+                          <li key={i} className="text-muted-foreground text-sm flex items-start gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50 mt-1.5 shrink-0" />
                             <span className="italic">{book}</span>
                           </li>

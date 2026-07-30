@@ -71,45 +71,45 @@ export function ComparisonCalculator() {
   };
 
   return (
-    <Card className="bg-slate-900 border-slate-800 shadow-2xl overflow-hidden mt-8">
-      <div className="p-6 md:p-8 grid lg:grid-cols-3 gap-8 border-b border-slate-800">
+    <Card className="bg-white border-slate-200 shadow-sm overflow-hidden mt-8 rounded-3xl">
+      <div className="p-6 md:p-8 grid lg:grid-cols-3 gap-8 border-b border-slate-200">
         
         {/* Controls */}
-        <div className="space-y-6 lg:border-r border-slate-800 lg:pr-8">
+        <div className="space-y-6 lg:border-r border-slate-200 lg:pr-8">
           <div>
-            <h3 className="text-xl font-display text-white mb-2">Simulate Your Wealth</h3>
-            <p className="text-slate-400 text-sm">See how inflation, taxes, and expense ratios eat into different asset classes over decades.</p>
+            <h3 className="text-xl font-display text-slate-900 font-bold mb-2">Simulate Your Wealth</h3>
+            <p className="text-slate-600 text-sm font-medium leading-relaxed">See how inflation, taxes, and expense ratios eat into different asset classes over decades.</p>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label className="text-slate-300">Initial Investment (₹)</Label>
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label className="text-slate-700 font-semibold">Initial Investment (₹)</Label>
               <Input 
                 type="number" 
                 value={initialInvestment} 
                 onChange={(e) => setInitialInvestment(Number(e.target.value))}
-                className="bg-slate-800 border-slate-700 text-white"
+                className="bg-slate-50 border-slate-200 text-slate-900 font-medium h-12 rounded-xl"
               />
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex justify-between">
-                <Label className="text-slate-300">Time Horizon (Years)</Label>
-                <span className="text-primary font-mono">{years} Yrs</span>
+                <Label className="text-slate-700 font-semibold">Time Horizon (Years)</Label>
+                <span className="text-blue-600 font-mono font-bold">{years} Yrs</span>
               </div>
               <input 
                 type="range" 
                 min="1" max="40" 
                 value={years} 
                 onChange={(e) => setYears(Number(e.target.value))}
-                className="w-full accent-primary"
+                className="w-full accent-blue-600"
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex justify-between">
-                <Label className="text-slate-300">Expected Inflation (%)</Label>
-                <span className="text-red-400 font-mono">{inflationRate}%</span>
+                <Label className="text-slate-700 font-semibold">Expected Inflation (%)</Label>
+                <span className="text-red-500 font-mono font-bold">{inflationRate}%</span>
               </div>
               <input 
                 type="range" 
@@ -121,8 +121,8 @@ export function ComparisonCalculator() {
             </div>
           </div>
 
-          <div className="bg-blue-900/20 border border-blue-500/20 rounded-lg p-4 text-sm text-blue-200">
-            <Info className="w-5 h-5 text-blue-400 mb-2" />
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 text-sm text-amber-900 font-medium shadow-sm">
+            <Info className="w-5 h-5 text-amber-600 mb-2" />
             <p>Notice how high taxes on FDs and high expense ratios on Active MFs drag down long-term compounding.</p>
           </div>
         </div>
@@ -139,10 +139,10 @@ export function ComparisonCalculator() {
                   </linearGradient>
                 ))}
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-              <XAxis dataKey="year" stroke="#94a3b8" fontSize={12} tickMargin={10} minTickGap={30} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="year" stroke="#64748b" fontSize={12} tickMargin={10} minTickGap={30} />
               <YAxis 
-                stroke="#94a3b8" 
+                stroke="#64748b" 
                 fontSize={12} 
                 tickFormatter={(val) => {
                   if (val >= 10000000) return `${(val / 10000000).toFixed(1)}Cr`;
@@ -151,8 +151,8 @@ export function ComparisonCalculator() {
                 }}
               />
               <Tooltip 
-                contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '8px', color: '#f8fafc' }}
-                itemStyle={{ fontSize: '14px', fontWeight: 500 }}
+                contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', color: '#0f172a', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)' }}
+                itemStyle={{ fontSize: '14px', fontWeight: 600 }}
                 formatter={(value: number) => formatCurrency(value)}
               />
               <Legend />
@@ -174,33 +174,33 @@ export function ComparisonCalculator() {
       </div>
 
       {/* Breakdown Table */}
-      <div className="p-6 md:p-8 bg-slate-950/50 overflow-x-auto">
-        <h4 className="text-slate-300 font-semibold mb-4 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-primary" /> After {years} Years Analysis
+      <div className="p-6 md:p-8 bg-slate-50 overflow-x-auto rounded-b-3xl">
+        <h4 className="text-slate-900 font-bold mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-blue-600" /> After {years} Years Analysis
         </h4>
         <table className="w-full text-left text-sm whitespace-nowrap">
           <thead>
-            <tr className="text-slate-400 border-b border-slate-800">
-              <th className="pb-3 font-medium">Asset Class</th>
-              <th className="pb-3 font-medium text-right">Gross Value</th>
-              <th className="pb-3 font-medium text-right">Taxes Paid</th>
-              <th className="pb-3 font-medium text-right">Net Value</th>
-              <th className="pb-3 font-medium text-right text-amber-400">Purchasing Power (Adj. Inflation)</th>
+            <tr className="text-slate-500 border-b border-slate-200">
+              <th className="pb-3 font-semibold">Asset Class</th>
+              <th className="pb-3 font-semibold text-right">Gross Value</th>
+              <th className="pb-3 font-semibold text-right">Taxes Paid</th>
+              <th className="pb-3 font-semibold text-right">Net Value</th>
+              <th className="pb-3 font-semibold text-right text-amber-600">Purchasing Power (Adj. Inflation)</th>
             </tr>
           </thead>
           <tbody>
             {Object.entries(INVESTMENT_OPTIONS).map(([key, opt]) => {
               const metrics = getFinalMetrics(key as keyof typeof INVESTMENT_OPTIONS);
               return (
-                <tr key={key} className="border-b border-slate-800/50 hover:bg-slate-800/20 transition-colors">
+                <tr key={key} className="border-b border-slate-100 hover:bg-white transition-colors">
                   <td className="py-4 flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full" style={{ backgroundColor: opt.color }} />
-                    <span className="font-medium text-slate-200">{opt.name}</span>
+                    <span className="font-bold text-slate-800">{opt.name}</span>
                   </td>
-                  <td className="py-4 text-right text-slate-300 font-mono">{formatCurrency(metrics.finalGrossValue)}</td>
-                  <td className="py-4 text-right text-red-400 font-mono">-{formatCurrency(metrics.tax)}</td>
-                  <td className="py-4 text-right text-emerald-400 font-mono font-bold">{formatCurrency(metrics.netValue)}</td>
-                  <td className="py-4 text-right text-amber-400 font-mono">{formatCurrency(metrics.inflationAdjusted)}</td>
+                  <td className="py-4 text-right text-slate-600 font-mono font-medium">{formatCurrency(metrics.finalGrossValue)}</td>
+                  <td className="py-4 text-right text-red-500 font-mono font-medium">-{formatCurrency(metrics.tax)}</td>
+                  <td className="py-4 text-right text-emerald-600 font-mono font-bold">{formatCurrency(metrics.netValue)}</td>
+                  <td className="py-4 text-right text-amber-600 font-mono font-bold">{formatCurrency(metrics.inflationAdjusted)}</td>
                 </tr>
               );
             })}

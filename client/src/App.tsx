@@ -6,6 +6,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ProgressProvider } from "./contexts/ProgressContext";
 import { JournalProvider } from "./contexts/JournalContext";
+import { UserProvider } from "./contexts/UserContext";
+import { OnboardingModal } from "@/components/OnboardingModal";
 import Home from "./pages/Home";
 import LearningLibrary from "./pages/LearningLibrary";
 import LearningPath from "./pages/LearningPath";
@@ -30,6 +32,10 @@ import CalculatorHub from "./pages/CalculatorHub";
 import CalculatorStub from "./pages/CalculatorStub";
 import MarketLegends from "./pages/MarketLegends";
 import InvestmentComparison from "./pages/InvestmentComparison";
+import InvestmentHub from "./pages/InvestmentHub";
+import MarketSimulator from "./pages/MarketSimulator";
+import InvestmentLab from "./pages/InvestmentLab";
+import DailyFeed from "./pages/DailyFeed";
 
 function Router() {
   return (
@@ -98,6 +104,18 @@ function Router() {
       <Route path="/legends">
         <Layout><MarketLegends /></Layout>
       </Route>
+      <Route path="/investment-hub">
+        <Layout><InvestmentHub /></Layout>
+      </Route>
+      <Route path="/simulator">
+        <Layout><MarketSimulator /></Layout>
+      </Route>
+      <Route path="/lab">
+        <Layout><InvestmentLab /></Layout>
+      </Route>
+      <Route path="/daily">
+        <Layout><DailyFeed /></Layout>
+      </Route>
       <Route path="/compare">
         <Layout><InvestmentComparison /></Layout>
       </Route>
@@ -117,10 +135,13 @@ function App() {
       <ThemeProvider defaultTheme="light">
         <ProgressProvider>
           <JournalProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Router />
-            </TooltipProvider>
+            <UserProvider>
+              <TooltipProvider>
+                <OnboardingModal />
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </UserProvider>
           </JournalProvider>
         </ProgressProvider>
       </ThemeProvider>

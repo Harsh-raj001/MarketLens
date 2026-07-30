@@ -36,11 +36,12 @@ export function HistoricalReplay({ example }: HistoricalReplayProps) {
   const markers = step === 1 ? [{ time: '2025-02-08', position: 'belowBar' as const, color: '#10b981', shape: 'arrowUp' as const, text: 'Pattern Trigger' }] : [];
 
   return (
-    <div className="bg-slate-900 rounded-xl overflow-hidden shadow-inner border border-slate-800 my-4">
-      <div className="bg-slate-950 px-4 py-2 border-b border-slate-800 flex justify-between items-center">
+    <div className="bg-card rounded-xl overflow-hidden shadow-inner border border-border/60 my-4">
+      <div className="bg-muted/30 px-4 py-2 border-b border-border/50 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-amber-500 uppercase tracking-wide">Historical Replay</span>
-          <span className="text-xs text-slate-400">{example.asset} • {example.date}</span>
+          <History className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-sm text-foreground">Historical Example</span>
+          <span className="text-xs text-muted-foreground">{example.asset} • {example.date}</span>
         </div>
       </div>
       
@@ -48,10 +49,10 @@ export function HistoricalReplay({ example }: HistoricalReplayProps) {
         {/* Step 0: The Setup */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-300">1</div>
-            <h4 className="text-sm font-semibold text-slate-200">Formation</h4>
+            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">1</div>
+            <div className="text-sm font-medium text-foreground">The Setup</div>
           </div>
-          <p className="text-sm text-slate-400 pl-8 leading-relaxed mb-4">
+          <p className="text-sm text-muted-foreground pl-8 leading-relaxed mb-4">
             {example.setup}
           </p>
           <div className="pl-8 mb-4">
@@ -65,7 +66,7 @@ export function HistoricalReplay({ example }: HistoricalReplayProps) {
             <Button 
               onClick={() => setStep(1)} 
               variant="outline" 
-              className="bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white gap-2 w-full sm:w-auto"
+              className="bg-muted border-border/50 text-foreground hover:bg-muted/80 gap-2 w-full sm:w-auto"
             >
               <PlayCircle className="w-4 h-4" /> Play Next Candle
             </Button>
@@ -74,25 +75,25 @@ export function HistoricalReplay({ example }: HistoricalReplayProps) {
           <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-4 duration-500">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-full bg-emerald-900/50 flex items-center justify-center text-xs font-bold text-emerald-400">2</div>
-                <h4 className="text-sm font-semibold text-emerald-400">Outcome</h4>
+                <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs font-bold text-emerald-600">2</div>
+                <h4 className="text-sm font-semibold text-emerald-600">Outcome</h4>
               </div>
-              <p className="text-sm text-emerald-100/70 pl-8 leading-relaxed">
+              <p className="text-sm text-muted-foreground pl-8 leading-relaxed">
                 {example.outcome}
               </p>
             </div>
             
-            <div className="bg-slate-800/50 rounded-lg p-4 ml-8 border border-slate-700/50 space-y-3">
+            <div className="bg-muted/30 rounded-lg p-4 ml-8 border border-border/50 space-y-3">
               <div>
                 <h5 className="text-xs font-bold text-primary mb-1 uppercase tracking-wider">Lens AI Explanation</h5>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-foreground">
                   {example.explanation}
                 </p>
               </div>
-              <div className="border-t border-slate-700/50 pt-3">
-                <h5 className="text-xs font-bold text-amber-500 mb-1 uppercase tracking-wider">Key Takeaway</h5>
-                <p className="text-sm text-slate-400 italic">
-                  Always wait for the market to confirm the pattern before committing capital.
+              <div className="border-t border-border/50 pt-3">
+                <h5 className="text-xs font-bold text-emerald-600 mb-1 uppercase tracking-wider">Lesson</h5>
+                <p className="text-sm text-foreground">
+                  {example.lesson}
                 </p>
               </div>
             </div>

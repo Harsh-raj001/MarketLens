@@ -16,23 +16,39 @@ import {
   Home,
   BookMarked,
   Calculator,
-  Star
+  Star,
+  LineChart,
+  Building2,
+  PlayCircle,
+  PieChart,
+  Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useMobile";
 import FloatingAIChat from "./ai/FloatingAIChat";
 import { CommandPalette } from "./ui/CommandPalette";
 import { AnimatePresence, motion } from "framer-motion";
+import { LensyLogo } from "./ui/LensyLogo";
 
 const navGroups = [
   {
-    title: "Learn",
+    title: "Daily Habit",
+    items: [
+      { label: "Daily Feed", href: "/daily", icon: Flame },
+      { label: "Dashboard", href: "/journal", icon: LayoutDashboard },
+    ]
+  },
+  {
+    title: "Learning",
     items: [
       { label: "Home", href: "/", icon: Home },
       { label: "Learning Paths", href: "/paths", icon: GraduationCap },
       { label: "Learning Library", href: "/library", icon: BookOpen },
       { label: "Market Legends", href: "/legends", icon: Star },
-      { label: "Compare Investments", href: "/compare", icon: Target },
+      { label: "Market Simulator", href: "/simulator", icon: PlayCircle },
+      { label: "Investment Lab", href: "/lab", icon: PieChart },
+      { label: "Investment Hub", href: "/investment-hub", icon: Building2 },
+      { label: "Compare Assets", href: "/compare", icon: LineChart },
     ]
   },
   {
@@ -58,7 +74,7 @@ const navGroups = [
       { label: "Dashboard", href: "/journal", icon: LayoutDashboard },
       { label: "Log Trade", href: "/journal/new", icon: BookMarked },
       { label: "Weekly Review", href: "/journal/review", icon: Target },
-      { label: "Trading Calculator", href: "/calculator", icon: Calculator },
+      { label: "Calculators", href: "/calculator", icon: Calculator },
     ]
   },
   {
@@ -101,28 +117,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="p-6 border-b border-border/50">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 shrink-0 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg transition-transform duration-500 group-hover:scale-105 group-hover:shadow-primary/50 relative overflow-hidden">
-              <svg viewBox="0 0 100 100" className="w-6 h-6 text-primary-foreground group-hover:rotate-[180deg] transition-transform duration-700 ease-in-out">
-                {/* Outer Lens */}
-                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" />
-                {/* Inner Lens Ring */}
-                <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="6 6" className="group-hover:stroke-primary-foreground/50 transition-colors" />
-                {/* Candlestick */}
-                <line x1="50" y1="25" x2="50" y2="75" stroke="currentColor" strokeWidth="6" strokeLinecap="round" className="group-hover:scale-y-110 origin-center transition-transform" />
-                <rect x="40" y="35" width="20" height="30" fill="currentColor" rx="3" />
-              </svg>
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 shadow-sm transition-transform duration-500 group-hover:scale-105 group-hover:shadow-md relative overflow-hidden border border-teal-100">
+              <LensyLogo className="w-7 h-7 group-hover:-rotate-12 transition-transform duration-500 ease-out" />
             </div>
             <div>
-              <h1 className="font-display text-xl font-bold text-foreground leading-tight tracking-tight">
+              <h1 className="font-display text-xl font-bold text-slate-900 leading-tight tracking-tight">
                 MarketLens
               </h1>
-              <p className="text-[11px] text-muted-foreground font-semibold tracking-wider mt-0.5">
-                Learn Markets. Build Confidence.
+              <p className="text-[11px] text-teal-600 font-semibold tracking-wider mt-0.5">
+                Your friendly market companion.
               </p>
             </div>
           </Link>
           {/* Cmd K hint */}
-          <div className="mt-6 flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg border border-border/50 text-xs text-muted-foreground font-medium">
+          <div 
+            onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
+            className="mt-6 flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg border border-border/50 text-xs text-muted-foreground font-medium cursor-pointer hover:bg-muted transition-colors"
+          >
             <span>Search</span>
             <div className="flex gap-1">
               <kbd className="px-1.5 py-0.5 bg-background rounded border border-border/60 shadow-sm font-sans">⌘</kbd>
@@ -192,14 +203,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 shrink-0 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm group">
-                <svg viewBox="0 0 100 100" className="w-5 h-5 text-primary-foreground">
-                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" />
-                  <line x1="50" y1="25" x2="50" y2="75" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
-                  <rect x="40" y="35" width="20" height="30" fill="currentColor" rx="3" />
-                </svg>
+              <div className="w-8 h-8 shrink-0 rounded-lg bg-teal-50 flex items-center justify-center text-teal-600 shadow-sm group border border-teal-100">
+                <LensyLogo className="w-5 h-5 group-hover:-rotate-12 transition-transform" />
               </div>
-              <span className="font-display text-lg font-bold">MarketLens</span>
+              <span className="font-display text-lg font-bold text-slate-900">MarketLens</span>
             </div>
           </header>
         )}

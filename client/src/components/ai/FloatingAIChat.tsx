@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { sampleResponses } from "../../data/knowledgeBase";
 import { Link } from "wouter";
+import { useUser } from "@/contexts/UserContext";
+import { LensyLogo } from "../ui/LensyLogo";
 
 interface Message {
   role: "user" | "ai";
@@ -13,9 +15,10 @@ interface Message {
 }
 
 export default function FloatingAIChat() {
+  const { profile } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "ai", content: "Hi! I'm Lens AI. Ask me about candlesticks, patterns, indicators, or market psychology." }
+    { role: "ai", content: "Hi! I'm Lensy. Ask me about candlesticks, patterns, indicators, or market psychology." }
   ]);
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -25,6 +28,29 @@ export default function FloatingAIChat() {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, isOpen]);
+
+  useEffect(() => {
+    const handleOpenLensAi = (e: any) => {
+      setIsOpen(true);
+      if (e.detail?.prompt) {
+        // Delay slightly for animation
+        setTimeout(() => {
+          setMessages(prev => [...prev, { role: "user", content: e.detail.prompt }]);
+          
+          // Basic contextual response generator
+          setTimeout(() => {
+            setMessages(prev => [...prev, { 
+              role: "ai", 
+              content: `Great question! Here is a deep dive based on your ${profile.experienceLevel || 'current'} level:\n\n1. **Core Idea**: It's all about risk management and understanding intrinsic value.\n2. **Practical Example**: If a stock is trading at ₹100 but its intrinsic value is ₹150, that's a margin of safety.\n\nWould you like me to explain how to calculate intrinsic value?` 
+            }]);
+          }, 600);
+        }, 300);
+      }
+    };
+
+    window.addEventListener('open-lens-ai', handleOpenLensAi);
+    return () => window.removeEventListener('open-lens-ai', handleOpenLensAi);
+  }, []);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -55,9 +81,16 @@ export default function FloatingAIChat() {
       for (const [key, lesson] of Object.entries(sampleResponses)) {
         if (lowerInput.includes(key.toLowerCase())) {
           found = true;
+          let prefix = "";
+          if (profile.experienceLevel === 'new' || profile.experienceLevel === 'basics') {
+            prefix = "Since you're learning the basics, let's keep this simple (like a car speedometer):\n\n";
+          } else if (profile.experienceLevel === 'occasional' || profile.experienceLevel === 'active') {
+            prefix = "Since you have some trading experience, let's look at the technical formulas and failure conditions:\n\n";
+          }
+          
           setMessages((prev) => [...prev, { 
             role: "ai", 
-            content: `**${lesson.topic}**: ${lesson.description}\n\nI have a full interactive visual lesson on this! Open the Interactive Lens AI to see the chart, psychology, and historical examples.` 
+            content: `${prefix}**${lesson.topic}**: ${lesson.description}\n\nI have a full interactive visual lesson on this! Open the Interactive Lens AI to see the chart, psychology, and historical examples.` 
           }]);
           break;
         }
@@ -73,12 +106,14 @@ export default function FloatingAIChat() {
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen ? (
         <Card className="w-80 sm:w-96 h-[500px] flex flex-col shadow-2xl border-primary/20 bg-background overflow-hidden animate-in slide-in-from-bottom-5 fade-in-0 duration-300">
-          <div className="flex items-center justify-between p-4 bg-primary text-primary-foreground">
+          <div className="flex items-center justify-between p-4 bg-teal-500 text-white border-b border-teal-600">
             <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5" />
-              <span className="font-display">Lens AI</span>
+              <div className="bg-white rounded-full p-1 shadow-sm">
+                <LensyLogo className="w-5 h-5" />
+              </div>
+              <span className="font-display font-bold">Lensy</span>
             </div>
-            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-primary-foreground hover:bg-primary/90 hover:text-white">
+            <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-teal-50 hover:bg-teal-600 hover:text-white rounded-full">
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -87,7 +122,7 @@ export default function FloatingAIChat() {
             <div className="space-y-4">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                  <div className={`max-w-[85%] p-3 rounded-xl ${msg.role === "user" ? "bg-primary text-primary-foreground rounded-tr-sm" : "bg-muted text-foreground rounded-tl-sm"}`}>
+                  <div className={`max-w-[85%] p-3 rounded-2xl ${msg.role === "user" ? "bg-teal-500 text-white rounded-br-sm shadow-sm" : "bg-white border border-slate-200 text-slate-800 rounded-bl-sm shadow-sm"}`}>
                     <span className="text-sm whitespace-pre-wrap">{msg.content}</span>
                     {msg.role === "ai" && msg.content.includes("Interactive Lens AI") && (
                       <Link href="/ai-tutor">
@@ -124,9 +159,9 @@ export default function FloatingAIChat() {
         <Button
           onClick={() => setIsOpen(true)}
           size="icon"
-          className="w-14 h-14 rounded-full shadow-xl bg-primary hover:bg-primary/90 text-primary-foreground animate-in zoom-in-50 duration-300"
+          className="w-14 h-14 rounded-full shadow-[0_8px_30px_rgb(20,184,166,0.3)] bg-teal-500 hover:bg-teal-600 border border-teal-400 text-white animate-in zoom-in-50 duration-300 group"
         >
-          <MessageSquare className="w-6 h-6" />
+          <LensyLogo className="w-7 h-7 group-hover:-rotate-12 transition-transform duration-300" animated />
         </Button>
       )}
     </div>

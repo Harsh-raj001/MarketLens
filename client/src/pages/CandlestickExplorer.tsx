@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
+import { PlaygroundWrapper } from "@/components/education/PlaygroundWrapper";
 
 interface CandlestickPattern {
   name: string;
@@ -140,6 +141,45 @@ export default function CandlestickExplorer() {
           )}
         </div>
       </div>
+
+      {/* Playground Integration */}
+      <PlaygroundWrapper 
+        title="Identify the Hammer"
+        question="Which of these candlesticks represents a strong rejection of lower prices (A Hammer)?"
+        explanation="A Hammer has a small real body near the top and a long lower wick (at least twice the size of the body). It shows that despite selling pressure, buyers stepped in and pushed the price back up."
+        options={[
+          {
+            id: 'opt1',
+            isCorrect: false,
+            svgContent: (
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <line x1="50" y1="20" x2="50" y2="80" stroke="#ef4444" strokeWidth="4" />
+                <rect x="35" y="20" width="30" height="60" fill="#ef4444" rx="2" />
+              </svg>
+            )
+          },
+          {
+            id: 'opt2',
+            isCorrect: false,
+            svgContent: (
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <line x1="50" y1="20" x2="50" y2="80" stroke="#10b981" strokeWidth="4" />
+                <rect x="35" y="40" width="30" height="20" fill="#10b981" rx="2" />
+              </svg>
+            )
+          },
+          {
+            id: 'opt3',
+            isCorrect: true,
+            svgContent: (
+              <svg width="100" height="100" viewBox="0 0 100 100">
+                <line x1="50" y1="20" x2="50" y2="90" stroke="#10b981" strokeWidth="4" />
+                <rect x="35" y="25" width="30" height="20" fill="#10b981" rx="2" />
+              </svg>
+            )
+          }
+        ]}
+      />
     </div>
   );
 }
