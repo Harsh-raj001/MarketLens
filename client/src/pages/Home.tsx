@@ -1,287 +1,315 @@
-﻿import { Link } from "wouter";
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect, useRef } from "react";
+import { Link } from "wouter";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import {
-  BookOpen, MessageSquare, TrendingUp, BarChart3, Search,
-  Target, Brain, Shield, ArrowRight, BookMarked, Command, Sparkles, Check
+  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-const features = [
-  { icon: MessageSquare, title: "Lens AI", description: "Ask any trading question and get educational answers grounded in verified knowledge. No signals, no advice — just clarity.", href: "/ai-tutor" },
-  { icon: BookOpen, title: "Structured Lessons", description: "Progress through curated learning paths from beginner to advanced. Each lesson includes quizzes to test your understanding.", href: "/paths" },
-  { icon: TrendingUp, title: "Candlestick Explorer", description: "Master 40+ candlestick patterns with interactive visual examples. Practice identification in a hands-on environment.", href: "/candlestick-explorer" },
-  { icon: BarChart3, title: "Chart Pattern Explorer", description: "Study head-and-shoulders, triangles, flags, and 25+ more classical chart formations with real market data overlays.", href: "/chart-patterns" },
-  { icon: Search, title: "Trading Dictionary", description: "Instantly look up any trading term with clear definitions, contextual examples, and cross-references.", href: "/dictionary" },
-  { icon: Target, title: "Daily Challenge", description: "Test your knowledge every day with pattern identification, concept quizzes, and scenario-based exercises.", href: "/daily-challenge" },
-];
+// --- Custom 3D Card Wrapper ---
+function TiltCard({ children, className }: { children: React.ReactNode, className?: string }) {
+  const x = useSpring(0, { stiffness: 300, damping: 30 });
+  const y = useSpring(0, { stiffness: 300, damping: 30 });
 
-const tools = [
-  { icon: Target, label: "Trading Cost Calculator", href: "/calculator", desc: "See exactly how much STT, GST, and broker fees eat into your profits.", checks: ["SEBI Charges", "GST & STT", "Exchange Fees"] },
-  { icon: Shield, label: "Position Size Calculator", href: "/calculator-stub", desc: "Never risk more than 1% again. Calculate exact shares to buy based on your stop loss.", checks: ["Risk % Input", "Account Size", "Exact Quantities"] },
-  { icon: TrendingUp, label: "Risk Reward Calculator", href: "/calculator-stub", desc: "Visualize your R:R ratio and find your statistical break-even win rate.", checks: ["Visual R:R Scale", "Break-even Rate", "Profit Targets"] },
-];
-
-const topics = ["Hammer", "RSI", "Risk", "Psychology"];
-
-export default function Home() {
-  const [demoTopic, setDemoTopic] = useState<string | null>(null);
-  const [demoStep, setDemoStep] = useState(0);
-
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 100]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -50]);
-
-  // Demo sequence player
-  useEffect(() => {
-    if (!demoTopic) {
-      setDemoStep(0);
-      return;
-    }
-    setDemoStep(1); // Start analyzing
-    
-    const sequence = [
-      setTimeout(() => setDemoStep(2), 1500), // Finding examples
-      setTimeout(() => setDemoStep(3), 3000), // Generating visual
-      setTimeout(() => setDemoStep(4), 4500), // Lesson Ready
-    ];
-    
-    return () => sequence.forEach(clearTimeout);
-  }, [demoTopic]);
+  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = (mouseX / width - 0.5) * 2; // -1 to 1
+    const yPct = (mouseY / height - 0.5) * 2; // -1 to 1
+    x.set(xPct * 8); // Max 8 deg rotation
+    y.set(yPct * -8);
+  }
 
   return (
-    <div className="space-y-0 pb-16">
-      {/* Interactive Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center pt-10 pb-20 overflow-hidden bg-background">
-        
-        {/* Parallax Background Elements */}
-        <motion.div style={{ y: y1 }} className="absolute -top-20 -right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
-        <motion.div style={{ y: y2 }} className="absolute bottom-10 -left-20 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl -z-10" />
-        
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center w-full max-w-[1600px] mx-auto px-6 lg:px-12">
-          
-          <ScrollReveal direction="left" className="space-y-8 relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
-              <Sparkles className="w-4 h-4" />
-              Premium AI Learning
-            </div>
-            
-            <h1 className="font-display text-5xl lg:text-6xl xl:text-[4.5rem] leading-[1.1] text-foreground tracking-tight">
-              Every chart tells a story.<br />
-              <span className="text-primary relative inline-block mt-2">
-                Lens AI helps you read it.
-              </span>
-            </h1>
-            
-            <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
-              Stop memorizing static patterns. Ask any question and our AI instantly assembles an interactive lesson with real market data, psychology, and historical replays.
-            </p>
-            
-            <div className="pt-2 space-y-4">
-              <p className="text-sm font-semibold text-foreground uppercase tracking-widest">What would you like to learn today?</p>
-              <div className="flex flex-wrap gap-3">
-                {topics.map(topic => (
-                  <button 
-                    key={topic}
-                    onClick={() => setDemoTopic(topic)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 border ${demoTopic === topic ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/30 scale-105" : "bg-card text-foreground border-border hover:border-primary/50 hover:bg-primary/5"}`}
-                  >
-                    {topic}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </ScrollReveal>
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => { x.set(0); y.set(0); }}
+      style={{ rotateX: y, rotateY: x, transformStyle: "preserve-3d", perspective: 1000 }}
+      className={className}
+    >
+      <div style={{ transform: "translateZ(30px)" }} className="w-full h-full">
+        {children}
+      </div>
+    </motion.div>
+  );
+}
 
-          {/* Dynamic Hero Demo Workspace */}
-          <ScrollReveal direction="right" className="relative h-[500px]">
-            <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl bg-card border border-border/60 flex flex-col z-10">
-               {/* Window Header */}
-               <div className="h-12 border-b border-border/50 bg-muted/30 flex items-center px-4 gap-2 backdrop-blur-md">
-                 <div className="flex gap-1.5">
-                   <div className="w-3 h-3 rounded-full bg-border" />
-                   <div className="w-3 h-3 rounded-full bg-border" />
-                   <div className="w-3 h-3 rounded-full bg-border" />
-                 </div>
-                 <div className="ml-4 flex-1">
-                   <div className="mx-auto w-3/4 bg-background border border-border/50 rounded-md h-7 flex items-center px-3 gap-2">
-                     <Command className="w-3 h-3 text-muted-foreground" />
-                     <span className="text-xs text-muted-foreground font-mono">
-                       {demoTopic ? `Explain ${demoTopic} in trading` : "Select a topic to begin..."}
-                     </span>
-                     {!demoTopic && (
-                       <motion.span 
-                         initial={{ opacity: 0 }} 
-                         animate={{ opacity: [0, 1, 0] }} 
-                         transition={{ repeat: Infinity, duration: 0.8 }} 
-                         className="w-1.5 h-3 bg-primary"
-                       />
-                     )}
-                   </div>
-                 </div>
-               </div>
-
-               {/* Dynamic Content Area */}
-               <div className="flex-1 p-6 relative overflow-hidden bg-gradient-to-b from-background to-muted/10 flex flex-col items-center justify-start overflow-y-auto no-scrollbar">
-                 <AnimatePresence mode="wait">
-                   {!demoTopic && (
-                     <motion.div
-                       key="empty"
-                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                       className="flex flex-col items-center justify-center text-muted-foreground mt-20 h-full opacity-50"
-                     >
-                       <Brain className="w-16 h-16 mb-4 opacity-20" />
-                       <p className="text-sm font-medium">Waiting for your question...</p>
-                     </motion.div>
-                   )}
-                   
-                   {demoTopic && demoStep > 0 && demoStep < 4 && (
-                      <motion.div
-                        key="loading"
-                        initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }}
-                        className="flex flex-col items-center justify-center text-muted-foreground mt-24 space-y-8 w-full max-w-sm mx-auto"
-                      >
-                        <div className="relative w-16 h-16">
-                          <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }} className="absolute inset-0 border-4 border-primary/20 border-t-primary rounded-full" />
-                          <Brain className="absolute inset-0 m-auto w-6 h-6 text-primary" />
-                        </div>
-                        
-                        <div className="w-full space-y-4">
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs font-mono">
-                              <span className={demoStep >= 1 ? "text-primary" : "text-muted-foreground"}>Analyzing psychology...</span>
-                              {demoStep >= 1 && <span className="text-primary">Done</span>}
-                            </div>
-                            <div className="h-1.5 w-full bg-muted overflow-hidden rounded-full"><motion.div initial={{ width: "0%" }} animate={{ width: demoStep >= 1 ? "100%" : "0%" }} className="h-full bg-primary" transition={{ duration: 0.5 }} /></div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs font-mono">
-                              <span className={demoStep >= 2 ? "text-primary" : "text-muted-foreground"}>Finding historical examples...</span>
-                              {demoStep >= 2 && <span className="text-primary">Done</span>}
-                            </div>
-                            <div className="h-1.5 w-full bg-muted overflow-hidden rounded-full"><motion.div initial={{ width: "0%" }} animate={{ width: demoStep >= 2 ? "100%" : "0%" }} className="h-full bg-primary" transition={{ duration: 0.5 }} /></div>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-xs font-mono">
-                              <span className={demoStep >= 3 ? "text-primary" : "text-muted-foreground"}>Generating visuals...</span>
-                              {demoStep >= 3 && <span className="text-primary">Done</span>}
-                            </div>
-                            <div className="h-1.5 w-full bg-muted overflow-hidden rounded-full"><motion.div initial={{ width: "0%" }} animate={{ width: demoStep >= 3 ? "100%" : "0%" }} className="h-full bg-primary" transition={{ duration: 0.5 }} /></div>
-                          </div>
-                        </div>
-                      </motion.div>
-                   )}
-
-                   {demoTopic && demoStep === 4 && (
-                     <motion.div
-                       key="lesson"
-                       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, staggerChildren: 0.2 }}
-                       className="w-full space-y-6 pb-4"
-                     >
-                       <motion.h3 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-display text-2xl text-foreground">
-                         {demoTopic} Explained
-                       </motion.h3>
-                       
-                       {/* Animated SVG Visual */}
-                       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-background border border-border rounded-xl p-6 shadow-sm flex flex-col items-center relative overflow-hidden">
-                         <div className="absolute inset-0 bg-grid-white/5 bg-[size:20px_20px]" />
-                         <svg width="120" height="120" viewBox="0 0 100 100" className="relative z-10">
-                            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, ease: "easeOut" }} x1="50" y1="20" x2="50" y2="90" stroke="#059669" strokeWidth="4" strokeLinecap="round" />
-                            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5, delay: 0.8 }} style={{ originY: 0 }} x="35" y="25" width="30" height="20" fill="#10b981" rx="2" stroke="#047857" strokeWidth="2" />
-                         </svg>
-                         <p className="text-xs text-muted-foreground mt-4 font-mono uppercase tracking-widest">Live rendering</p>
-                       </motion.div>
-
-                       {/* Psychology Box */}
-                       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 1.2 }} className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
-                         <div className="flex items-center gap-2 mb-2">
-                           <Brain className="w-4 h-4 text-amber-600" />
-                           <span className="text-sm font-semibold text-amber-900 dark:text-amber-500">Market Psychology</span>
-                         </div>
-                         <p className="text-xs text-amber-800/80 dark:text-amber-200/80 leading-relaxed">
-                           Bears pushed the price down significantly, but bulls stepped in and completely overpowered them before the close, creating the long lower wick.
-                         </p>
-                       </motion.div>
-                     </motion.div>
-                   )}
-                 </AnimatePresence>
-               </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Features Grid (bg-muted) */}
-      <section className="bg-muted/30 py-24 border-y border-border/50">
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-12 space-y-12">
-          <ScrollReveal direction="up" className="text-center max-w-2xl mx-auto space-y-4">
-            <h2 className="font-display text-3xl md:text-4xl text-foreground tracking-tight">Everything you need to build market literacy</h2>
-            <p className="text-muted-foreground text-lg">A complete ecosystem designed to take you from basic concepts to advanced pattern recognition.</p>
-          </ScrollReveal>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((f, i) => (
-              <ScrollReveal key={i} delay={i * 0.1}>
-                <Link href={f.href}>
-                  <motion.div whileHover={{ scale: 1.02, y: -5 }} whileTap={{ scale: 0.98 }}>
-                    <Card className="h-full border-border/60 bg-card hover:shadow-xl hover:shadow-primary/5 transition-all duration-500 cursor-pointer group">
-                      <CardContent className="p-8 space-y-5">
-                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
-                          <f.icon className="w-6 h-6" />
-                        </div>
-                        <h3 className="font-semibold text-foreground text-xl tracking-tight">{f.title}</h3>
-                        <p className="text-muted-foreground leading-relaxed">{f.description}</p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Trading Toolkit */}
-      <section className="py-24 bg-background">
-        <div className="max-w-[1600px] mx-auto px-6 lg:px-12 space-y-12">
-          <ScrollReveal direction="up" className="text-center max-w-2xl mx-auto space-y-4">
-            <h2 className="font-display text-3xl md:text-4xl text-foreground tracking-tight">Educational Calculators</h2>
-            <p className="text-muted-foreground text-lg">Understand exactly what you risk and what you pay, with deep educational breakdowns.</p>
-          </ScrollReveal>
-          <div className="grid lg:grid-cols-3 gap-6">
-            {tools.map((t, i) => (
-              <ScrollReveal key={i} delay={i * 0.1} direction="up">
-                <Link href={t.href}>
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Card className="h-full border-border/50 bg-secondary/10 hover:bg-secondary/30 hover:border-primary/30 transition-all duration-300 cursor-pointer group">
-                      <CardContent className="p-8 space-y-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-xl bg-background border border-border flex items-center justify-center text-foreground group-hover:border-primary/50 group-hover:text-primary transition-all duration-300 shadow-sm">
-                            <t.icon className="w-6 h-6" />
-                          </div>
-                          <h3 className="font-semibold text-foreground text-xl">{t.label}</h3>
-                        </div>
-                        <p className="text-sm text-muted-foreground leading-relaxed">{t.desc}</p>
-                        <div className="pt-4 border-t border-border/50 space-y-2">
-                          {t.checks.map((chk, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-sm font-medium text-foreground">
-                              <Check className="w-4 h-4 text-emerald-500" /> {chk}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="pt-2 flex items-center text-primary text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1 duration-300">
-                          Open Calculator <ArrowRight className="w-4 h-4 ml-1" />
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </Link>
-              </ScrollReveal>
-            ))}
-          </div>
-        </div>
-      </section>
+// --- Background ---
+function PremiumBackground() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="absolute inset-0 bg-background" />
+      <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]" />
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+        className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-[100px]"
+      />
+      <motion.div
+        animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.4, 0.2] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]"
+      />
     </div>
   );
 }
+
+// --- Sections ---
+export default function Home() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
+
+  // Smooth scroll springs
+  const smoothY = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
+
+  // Section 1: Hero [0 to 0.25]
+  const s1Scale = useTransform(smoothY, [0, 0.2], [1, 0.95]);
+  const s1Opacity = useTransform(smoothY, [0.15, 0.25], [1, 0]);
+  const s1Blur = useTransform(smoothY, [0.15, 0.25], ["blur(0px)", "blur(10px)"]);
+
+  // Section 2: Visual Learning [0.15 to 0.5]
+  const s2Y = useTransform(smoothY, [0.15, 0.25], ["100vh", "0vh"]);
+  const s2Scale = useTransform(smoothY, [0.25, 0.45], [1, 0.95]);
+  const s2Opacity = useTransform(smoothY, [0.4, 0.5], [1, 0]);
+
+  // Section 3: Toolkit [0.4 to 0.75]
+  const s3Y = useTransform(smoothY, [0.4, 0.5], ["100vh", "0vh"]);
+  const s3Scale = useTransform(smoothY, [0.5, 0.7], [1, 0.95]);
+  const s3Opacity = useTransform(smoothY, [0.65, 0.75], [1, 0]);
+
+  // Section 4: Learning [0.65 to 1.0]
+  const s4Y = useTransform(smoothY, [0.65, 0.75], ["100vh", "0vh"]);
+
+  return (
+    <div ref={containerRef} className="h-[400vh] bg-background">
+      <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
+        <PremiumBackground />
+
+        {/* --- SECTION 1: HERO --- */}
+        <motion.div style={{ scale: s1Scale, opacity: s1Opacity, filter: s1Blur }} className="absolute inset-0 flex items-center z-10">
+          <HeroSection />
+        </motion.div>
+
+        {/* --- SECTION 2: VISUAL LEARNING --- */}
+        <motion.div style={{ y: s2Y, scale: s2Scale, opacity: s2Opacity }} className="absolute inset-0 flex items-center bg-background/80 backdrop-blur-3xl z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+          <VisualSection />
+        </motion.div>
+
+        {/* --- SECTION 3: TOOLKIT --- */}
+        <motion.div style={{ y: s3Y, scale: s3Scale, opacity: s3Opacity }} className="absolute inset-0 flex items-center bg-background/90 backdrop-blur-3xl z-30 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+          <ToolkitSection />
+        </motion.div>
+
+        {/* --- SECTION 4: LEARNING & LOG --- */}
+        <motion.div style={{ y: s4Y }} className="absolute inset-0 flex items-center bg-background z-40 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+          <LearningSection />
+        </motion.div>
+      </div>
+    </div>
+  );
+}
+
+// --- Hero Sequence ---
+function HeroSection() {
+  const [demoStep, setDemoStep] = useState(0);
+
+  useEffect(() => {
+    const sequence = async () => {
+      while (true) {
+        setDemoStep(0);
+        await new Promise(r => setTimeout(r, 2000));
+        setDemoStep(1); // Typing
+        await new Promise(r => setTimeout(r, 1500));
+        setDemoStep(2); // Search
+        await new Promise(r => setTimeout(r, 1000));
+        setDemoStep(3); // Chart
+        await new Promise(r => setTimeout(r, 2000));
+        setDemoStep(4); // Psychology
+        await new Promise(r => setTimeout(r, 2000));
+        setDemoStep(5); // Quiz
+        await new Promise(r => setTimeout(r, 4000));
+      }
+    };
+    sequence();
+  }, []);
+
+  return (
+    <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-12 items-center">
+      <div className="space-y-8">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium border border-primary/20">
+          <Sparkles className="w-4 h-4" /> Premium AI Learning
+        </div>
+        <h1 className="font-display text-5xl lg:text-7xl leading-[1.1] text-foreground tracking-tight">
+          Every chart tells a story.<br />
+          <span className="text-primary relative">Lens AI helps you read it.</span>
+        </h1>
+        <p className="text-xl text-muted-foreground leading-relaxed max-w-xl">
+          Stop memorizing static patterns. Ask any question and our AI instantly assembles an interactive lesson.
+        </p>
+      </div>
+
+      <TiltCard className="h-[500px]">
+        <div className="w-full h-full bg-card rounded-2xl border border-border/60 shadow-2xl flex flex-col overflow-hidden relative">
+          <div className="h-12 border-b border-border/50 bg-muted/30 flex items-center px-4 backdrop-blur-md gap-3">
+            <div className="flex gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-border" />
+              <div className="w-3 h-3 rounded-full bg-border" />
+              <div className="w-3 h-3 rounded-full bg-border" />
+            </div>
+            <div className="flex-1 max-w-md mx-auto bg-background border border-border/50 rounded-md h-7 flex items-center px-3 gap-2">
+              <Command className="w-3 h-3 text-muted-foreground" />
+              <span className="text-xs text-muted-foreground font-mono">
+                {demoStep >= 1 ? "Why did this Hammer fail?" : "Ask a trading question..."}
+              </span>
+              {demoStep === 1 && (
+                <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 0.8 }} className="w-1.5 h-3 bg-primary" />
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1 p-6 flex flex-col relative overflow-hidden bg-gradient-to-b from-background to-muted/10">
+            <AnimatePresence mode="popLayout">
+              {demoStep === 2 && (
+                 <motion.div key="s2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="m-auto flex flex-col items-center opacity-50">
+                   <Brain className="w-12 h-12 text-primary animate-pulse mb-4" />
+                   <p className="text-sm font-mono text-primary">Analyzing pattern context...</p>
+                 </motion.div>
+              )}
+              {demoStep >= 3 && (
+                 <motion.div key="s3" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full space-y-4">
+                    {/* SVG Chart */}
+                    <div className="h-32 bg-background rounded-lg border border-border shadow-sm flex items-center justify-center relative overflow-hidden">
+                       <div className="absolute inset-0 bg-grid-white/5 bg-[size:10px_10px]" />
+                       <svg viewBox="0 0 100 50" className="w-full h-full relative z-10 px-4">
+                         <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }} points="10,40 30,20 50,45 70,10 90,30" fill="none" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                         <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1 }} cx="50" cy="45" r="3" fill="#ef4444" />
+                       </svg>
+                    </div>
+                    
+                    {demoStep >= 4 && (
+                      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+                        <p className="text-xs text-amber-700 dark:text-amber-300"><strong>Psychology:</strong> Buyers stepped in, but the preceding downtrend was too strong. This is a false reversal.</p>
+                      </motion.div>
+                    )}
+                    
+                    {demoStep >= 5 && (
+                      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-between">
+                        <span className="text-sm font-medium text-primary">Knowledge Check Ready</span>
+                        <Button size="sm">Start Quiz</Button>
+                      </motion.div>
+                    )}
+                 </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </TiltCard>
+    </div>
+  );
+}
+
+// --- Visual Learning Section ---
+function VisualSection() {
+  return (
+    <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 space-y-16">
+      <div className="text-center space-y-4 max-w-3xl mx-auto">
+        <h2 className="font-display text-4xl lg:text-5xl text-foreground">Interactive Visual Explorers</h2>
+        <p className="text-xl text-muted-foreground">Study exact shapes, watch lines form, and learn patterns organically instead of reading textbooks.</p>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        {[
+          { title: "Candlestick Explorer", desc: "40+ single and multi-candle patterns drawn stroke-by-stroke.", svg: <rect x="30" y="20" width="40" height="60" fill="#10b981" rx="4" /> },
+          { title: "Chart Patterns", desc: "W-bottoms, M-tops, and Triangles animated with price lines.", svg: <polyline points="10,80 30,30 50,70 70,20 90,50" fill="none" stroke="#6366f1" strokeWidth="6" /> },
+          { title: "Indicators", desc: "MACD, RSI, and moving averages simplified visually.", svg: <circle cx="50" cy="50" r="30" fill="none" stroke="#ef4444" strokeWidth="6" strokeDasharray="10 10" /> }
+        ].map((item, i) => (
+          <TiltCard key={i}>
+            <div className="bg-card border border-border/60 rounded-2xl p-8 h-full shadow-lg group">
+              <div className="h-40 bg-background rounded-xl border border-border/50 mb-6 flex items-center justify-center overflow-hidden">
+                <svg viewBox="0 0 100 100" className="w-20 h-20 opacity-80 group-hover:scale-110 transition-transform duration-500">
+                  {item.svg}
+                </svg>
+              </div>
+              <h3 className="font-semibold text-xl mb-2">{item.title}</h3>
+              <p className="text-muted-foreground">{item.desc}</p>
+            </div>
+          </TiltCard>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- Toolkit Section ---
+function ToolkitSection() {
+  return (
+    <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="space-y-6">
+        <h2 className="font-display text-4xl lg:text-5xl text-foreground">Trading Toolkit</h2>
+        <p className="text-xl text-muted-foreground">See exactly how much STT, GST, and broker fees eat into your profits before you even place a trade.</p>
+        <ul className="space-y-4 pt-4">
+          {["Brokerage & SEBI Charges", "Stop Loss Sizing", "Risk/Reward Ratio Check"].map((t, i) => (
+            <li key={i} className="flex items-center gap-3 text-lg font-medium">
+              <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center"><Check className="w-3 h-3" /></div>
+              {t}
+            </li>
+          ))}
+        </ul>
+        <Button className="mt-8 rounded-full" size="lg">Open Calculators</Button>
+      </div>
+
+      <div className="grid gap-4">
+        {[1, 2, 3].map(i => (
+          <motion.div key={i} whileHover={{ x: 10 }} className="bg-card border border-border/60 rounded-xl p-6 flex items-center justify-between shadow-sm cursor-pointer">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center text-primary">
+                <Target className="w-6 h-6" />
+              </div>
+              <div>
+                <h4 className="font-semibold">Calculator Widget {i}</h4>
+                <p className="text-sm text-muted-foreground">Detailed breakdown simulation</p>
+              </div>
+            </div>
+            <ArrowRight className="w-5 h-5 text-muted-foreground" />
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// --- Learning Section ---
+function LearningSection() {
+  return (
+    <div className="w-full max-w-[1600px] mx-auto px-6 lg:px-12 flex flex-col items-center justify-center space-y-12">
+      <div className="text-center space-y-4 max-w-2xl">
+        <h2 className="font-display text-4xl lg:text-5xl text-foreground">The Complete Journey</h2>
+        <p className="text-xl text-muted-foreground">From a beginner learning candlesticks to advanced daily journaling and habit building.</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8 w-full max-w-4xl">
+        <TiltCard>
+          <div className="bg-card p-10 rounded-2xl border border-border/60 text-center space-y-4 shadow-lg group">
+            <div className="w-16 h-16 bg-blue-500/10 text-blue-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+              <BookOpen className="w-8 h-8" />
+            </div>
+            <h3 className="font-display text-2xl">Learning Paths</h3>
+            <p className="text-muted-foreground">Structured courses with progress tracking and quizzes.</p>
+          </div>
+        </TiltCard>
+        <TiltCard>
+          <div className="bg-card p-10 rounded-2xl border border-border/60 text-center space-y-4 shadow-lg group">
+            <div className="w-16 h-16 bg-purple-500/10 text-purple-500 rounded-full flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300">
+              <Brain className="w-8 h-8" />
+            </div>
+            <h3 className="font-display text-2xl">Trade Log</h3>
+            <p className="text-muted-foreground">Track mistakes, emotions, and daily insights.</p>
+          </div>
+        </TiltCard>
+      </div>
+    </div>
+  );
+}
+
