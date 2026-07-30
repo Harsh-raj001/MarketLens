@@ -15,7 +15,8 @@ import {
   X,
   Home,
   BookMarked,
-  Calculator
+  Calculator,
+  Star
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -30,6 +31,8 @@ const navGroups = [
       { label: "Home", href: "/", icon: Home },
       { label: "Learning Paths", href: "/paths", icon: GraduationCap },
       { label: "Learning Library", href: "/library", icon: BookOpen },
+      { label: "Market Legends", href: "/legends", icon: Star },
+      { label: "Compare Investments", href: "/compare", icon: Target },
     ]
   },
   {

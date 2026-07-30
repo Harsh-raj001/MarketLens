@@ -26,8 +26,10 @@ import Dashboard from "./pages/journal/Dashboard";
 import NewTrade from "./pages/journal/NewTrade";
 import TradeDetail from "./pages/journal/TradeDetail";
 import WeeklyReview from "./pages/journal/WeeklyReview";
-import TradingCalculatorPage from "./pages/TradingCalculatorPage";
+import CalculatorHub from "./pages/CalculatorHub";
 import CalculatorStub from "./pages/CalculatorStub";
+import MarketLegends from "./pages/MarketLegends";
+import InvestmentComparison from "./pages/InvestmentComparison";
 
 function Router() {
   return (
@@ -88,10 +90,16 @@ function Router() {
         <Layout><WeeklyReview /></Layout>
       </Route>
       <Route path="/calculator">
-        <Layout><TradingCalculatorPage /></Layout>
+        <Layout><CalculatorHub /></Layout>
       </Route>
       <Route path="/calculator-stub">
         <Layout><CalculatorStub /></Layout>
+      </Route>
+      <Route path="/legends">
+        <Layout><MarketLegends /></Layout>
+      </Route>
+      <Route path="/compare">
+        <Layout><InvestmentComparison /></Layout>
       </Route>
       <Route path="/404">
         <NotFound />

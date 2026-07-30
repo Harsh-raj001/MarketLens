@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { MarketPulse } from "@/components/education/MarketPulse";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -65,26 +66,31 @@ export default function Home() {
   // Smooth scroll springs
   const smoothY = useSpring(scrollYProgress, { stiffness: 400, damping: 40 });
 
-  // Section 1: Hero [0 to 0.25]
-  const s1Scale = useTransform(smoothY, [0, 0.2], [1, 0.95]);
-  const s1Opacity = useTransform(smoothY, [0.15, 0.25], [1, 0]);
-  const s1Blur = useTransform(smoothY, [0.15, 0.25], ["blur(0px)", "blur(10px)"]);
+  // Section 1: Hero [0 to 0.2]
+  const s1Scale = useTransform(smoothY, [0, 0.15], [1, 0.95]);
+  const s1Opacity = useTransform(smoothY, [0.1, 0.2], [1, 0]);
+  const s1Blur = useTransform(smoothY, [0.1, 0.2], ["blur(0px)", "blur(10px)"]);
 
-  // Section 2: Visual Learning [0.15 to 0.5]
-  const s2Y = useTransform(smoothY, [0.15, 0.25], ["100vh", "0vh"]);
-  const s2Scale = useTransform(smoothY, [0.25, 0.45], [1, 0.95]);
-  const s2Opacity = useTransform(smoothY, [0.4, 0.5], [1, 0]);
+  // Section 2: Market Pulse [0.15 to 0.4]
+  const spY = useTransform(smoothY, [0.1, 0.2], ["100vh", "0vh"]);
+  const spScale = useTransform(smoothY, [0.2, 0.35], [1, 0.95]);
+  const spOpacity = useTransform(smoothY, [0.3, 0.4], [1, 0]);
 
-  // Section 3: Toolkit [0.4 to 0.75]
-  const s3Y = useTransform(smoothY, [0.4, 0.5], ["100vh", "0vh"]);
-  const s3Scale = useTransform(smoothY, [0.5, 0.7], [1, 0.95]);
-  const s3Opacity = useTransform(smoothY, [0.65, 0.75], [1, 0]);
+  // Section 3: Visual Learning [0.35 to 0.6]
+  const s2Y = useTransform(smoothY, [0.3, 0.4], ["100vh", "0vh"]);
+  const s2Scale = useTransform(smoothY, [0.4, 0.55], [1, 0.95]);
+  const s2Opacity = useTransform(smoothY, [0.5, 0.6], [1, 0]);
 
-  // Section 4: Learning [0.65 to 1.0]
-  const s4Y = useTransform(smoothY, [0.65, 0.75], ["100vh", "0vh"]);
+  // Section 4: Toolkit [0.55 to 0.8]
+  const s3Y = useTransform(smoothY, [0.5, 0.6], ["100vh", "0vh"]);
+  const s3Scale = useTransform(smoothY, [0.6, 0.75], [1, 0.95]);
+  const s3Opacity = useTransform(smoothY, [0.7, 0.8], [1, 0]);
+
+  // Section 5: Learning [0.75 to 1.0]
+  const s4Y = useTransform(smoothY, [0.7, 0.8], ["100vh", "0vh"]);
 
   return (
-    <div ref={containerRef} className="h-[250vh] bg-background">
+    <div ref={containerRef} className="h-[300vh] bg-background">
       <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center">
         <PremiumBackground />
 
@@ -93,18 +99,23 @@ export default function Home() {
           <HeroSection />
         </motion.div>
 
-        {/* --- SECTION 2: VISUAL LEARNING --- */}
-        <motion.div style={{ y: s2Y, scale: s2Scale, opacity: s2Opacity }} className="absolute inset-0 flex items-center bg-background/80 backdrop-blur-3xl z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+        {/* --- SECTION 2: MARKET PULSE --- */}
+        <motion.div style={{ y: spY, scale: spScale, opacity: spOpacity }} className="absolute inset-0 flex items-center bg-background/80 backdrop-blur-3xl z-20 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+          <MarketPulse />
+        </motion.div>
+
+        {/* --- SECTION 3: VISUAL LEARNING --- */}
+        <motion.div style={{ y: s2Y, scale: s2Scale, opacity: s2Opacity }} className="absolute inset-0 flex items-center bg-background/80 backdrop-blur-3xl z-30 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
           <VisualSection />
         </motion.div>
 
-        {/* --- SECTION 3: TOOLKIT --- */}
-        <motion.div style={{ y: s3Y, scale: s3Scale, opacity: s3Opacity }} className="absolute inset-0 flex items-center bg-background/90 backdrop-blur-3xl z-30 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+        {/* --- SECTION 4: TOOLKIT --- */}
+        <motion.div style={{ y: s3Y, scale: s3Scale, opacity: s3Opacity }} className="absolute inset-0 flex items-center bg-background/90 backdrop-blur-3xl z-40 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
           <ToolkitSection />
         </motion.div>
 
-        {/* --- SECTION 4: LEARNING & LOG --- */}
-        <motion.div style={{ y: s4Y }} className="absolute inset-0 flex items-center bg-background z-40 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
+        {/* --- SECTION 5: LEARNING & LOG --- */}
+        <motion.div style={{ y: s4Y }} className="absolute inset-0 flex items-center bg-background z-50 shadow-[0_-20px_50px_rgba(0,0,0,0.1)] border-t border-border/50">
           <LearningSection />
         </motion.div>
       </div>
