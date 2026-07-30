@@ -1,8 +1,9 @@
-﻿import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import {
-  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search
+  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search, Check
 } from "lucide-react";
 
 // --- Custom 3D Card Wrapper ---
