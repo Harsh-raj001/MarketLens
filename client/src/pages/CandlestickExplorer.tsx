@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 
 interface CandlestickPattern {
   name: string;
@@ -104,6 +105,15 @@ export default function CandlestickExplorer() {
                   </div>
                   <h3 className="font-display text-xl text-foreground">{selectedPattern.name}</h3>
                 </div>
+
+                {/* SVG Visualizer */}
+                <div className="bg-background rounded-xl border border-border/60 p-6 flex justify-center items-center shadow-inner overflow-hidden relative">
+                   <div className="absolute inset-0 bg-grid-white/5 bg-[size:10px_10px]" />
+                   <div className="relative z-10 w-full max-w-[160px] aspect-square flex items-center justify-center">
+                      <CandlestickVisualizer name={selectedPattern.name} type={selectedPattern.type} />
+                   </div>
+                </div>
+
                 <p className="text-sm text-muted-foreground leading-relaxed">{selectedPattern.description}</p>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -131,5 +141,113 @@ export default function CandlestickExplorer() {
         </div>
       </div>
     </div>
+  );
+}
+
+function CandlestickVisualizer({ name, type }: { name: string, type: string }) {
+  const isBull = type === "bullish";
+  const color = isBull ? "#10b981" : type === "bearish" ? "#ef4444" : "#8b5cf6";
+  const strokeColor = isBull ? "#047857" : type === "bearish" ? "#b91c1c" : "#5b21b6";
+
+  const renderPattern = () => {
+    switch (name) {
+      case "Hammer":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* Wick */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} x1="50" y1="30" x2="50" y2="90" stroke={strokeColor} strokeWidth="4" strokeLinecap="round" />
+            {/* Body */}
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.6, duration: 0.4 }} style={{ originY: 0 }} x="35" y="30" width="30" height="20" fill={color} rx="2" stroke={strokeColor} strokeWidth="2" />
+          </svg>
+        );
+      case "Shooting Star":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* Wick */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} x1="50" y1="10" x2="50" y2="70" stroke={strokeColor} strokeWidth="4" strokeLinecap="round" />
+            {/* Body */}
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.6, duration: 0.4 }} style={{ originY: 1 }} x="35" y="50" width="30" height="20" fill={color} rx="2" stroke={strokeColor} strokeWidth="2" />
+          </svg>
+        );
+      case "Doji":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* Wick */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} x1="50" y1="15" x2="50" y2="85" stroke={strokeColor} strokeWidth="4" strokeLinecap="round" />
+            {/* Body (Line) */}
+            <motion.line initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.6, duration: 0.4 }} x1="30" y1="50" x2="70" y2="50" stroke={strokeColor} strokeWidth="6" strokeLinecap="round" />
+          </svg>
+        );
+      case "Bullish Engulfing":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* Candle 1 (Bearish) */}
+            <line x1="30" y1="40" x2="30" y2="60" stroke="#b91c1c" strokeWidth="3" strokeLinecap="round" />
+            <rect x="20" y="45" width="20" height="10" fill="#ef4444" rx="1" stroke="#b91c1c" strokeWidth="1" />
+            {/* Candle 2 (Bullish Engulfing) */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} x1="70" y1="20" x2="70" y2="80" stroke="#047857" strokeWidth="4" strokeLinecap="round" />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.5, duration: 0.4 }} style={{ originY: 1 }} x="55" y="25" width="30" height="50" fill="#10b981" rx="2" stroke="#047857" strokeWidth="2" />
+          </svg>
+        );
+      case "Bearish Engulfing":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* Candle 1 (Bullish) */}
+            <line x1="30" y1="40" x2="30" y2="60" stroke="#047857" strokeWidth="3" strokeLinecap="round" />
+            <rect x="20" y="45" width="20" height="10" fill="#10b981" rx="1" stroke="#047857" strokeWidth="1" />
+            {/* Candle 2 (Bearish Engulfing) */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} x1="70" y1="20" x2="70" y2="80" stroke="#b91c1c" strokeWidth="4" strokeLinecap="round" />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.5, duration: 0.4 }} style={{ originY: 0 }} x="55" y="25" width="30" height="50" fill="#ef4444" rx="2" stroke="#b91c1c" strokeWidth="2" />
+          </svg>
+        );
+      case "Morning Star":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* C1 */}
+            <line x1="20" y1="10" x2="20" y2="70" stroke="#b91c1c" strokeWidth="3" strokeLinecap="round" />
+            <rect x="10" y="20" width="20" height="45" fill="#ef4444" rx="1" />
+            {/* C2 (Star) */}
+            <motion.line initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} x1="50" y1="75" x2="50" y2="95" stroke="#5b21b6" strokeWidth="2" strokeLinecap="round" />
+            <motion.rect initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} x="42" y="82" width="16" height="8" fill="#8b5cf6" rx="1" />
+            {/* C3 */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.6, duration: 0.6 }} x1="80" y1="20" x2="80" y2="80" stroke="#047857" strokeWidth="3" strokeLinecap="round" />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.8, duration: 0.4 }} style={{ originY: 1 }} x="70" y="30" width="20" height="40" fill="#10b981" rx="1" />
+          </svg>
+        );
+      case "Evening Star":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            {/* C1 */}
+            <line x1="20" y1="30" x2="20" y2="90" stroke="#047857" strokeWidth="3" strokeLinecap="round" />
+            <rect x="10" y="35" width="20" height="45" fill="#10b981" rx="1" />
+            {/* C2 (Star) */}
+            <motion.line initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} x1="50" y1="5" x2="50" y2="25" stroke="#5b21b6" strokeWidth="2" strokeLinecap="round" />
+            <motion.rect initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 }} x="42" y="10" width="16" height="8" fill="#8b5cf6" rx="1" />
+            {/* C3 */}
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ delay: 0.6, duration: 0.6 }} x1="80" y1="20" x2="80" y2="80" stroke="#b91c1c" strokeWidth="3" strokeLinecap="round" />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.8, duration: 0.4 }} style={{ originY: 0 }} x="70" y="30" width="20" height="40" fill="#ef4444" rx="1" />
+          </svg>
+        );
+      case "Marubozu":
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.6 }} style={{ originY: isBull ? 1 : 0 }} x="30" y="10" width="40" height="80" fill={color} rx="2" stroke={strokeColor} strokeWidth="2" />
+          </svg>
+        );
+      default:
+        // Generic Candle
+        return (
+          <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
+            <motion.line initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.8 }} x1="50" y1="15" x2="50" y2="85" stroke={strokeColor} strokeWidth="4" strokeLinecap="round" />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ delay: 0.6, duration: 0.4 }} style={{ originY: 0.5 }} x="35" y="35" width="30" height="30" fill={color} rx="2" stroke={strokeColor} strokeWidth="2" />
+          </svg>
+        );
+    }
+  };
+
+  return (
+    <motion.div key={name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full h-full">
+      {renderPattern()}
+    </motion.div>
   );
 }

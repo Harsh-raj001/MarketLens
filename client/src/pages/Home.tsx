@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+﻿import { Link } from "wouter";
 import { useState, useEffect } from "react";
 import {
   BookOpen, MessageSquare, TrendingUp, BarChart3, Search,
@@ -10,7 +10,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const features = [
-  { icon: MessageSquare, title: "Lens AI", description: "Ask any trading question and get educational answers grounded in verified knowledge. No signals, no advice � just clarity.", href: "/ai-tutor" },
+  { icon: MessageSquare, title: "Lens AI", description: "Ask any trading question and get educational answers grounded in verified knowledge. No signals, no advice — just clarity.", href: "/ai-tutor" },
   { icon: BookOpen, title: "Structured Lessons", description: "Progress through curated learning paths from beginner to advanced. Each lesson includes quizzes to test your understanding.", href: "/paths" },
   { icon: TrendingUp, title: "Candlestick Explorer", description: "Master 40+ candlestick patterns with interactive visual examples. Practice identification in a hands-on environment.", href: "/candlestick-explorer" },
   { icon: BarChart3, title: "Chart Pattern Explorer", description: "Study head-and-shoulders, triangles, flags, and 25+ more classical chart formations with real market data overlays.", href: "/chart-patterns" },

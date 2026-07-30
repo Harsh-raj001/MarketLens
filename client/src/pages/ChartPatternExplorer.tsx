@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "framer-motion";
 
 interface ChartPattern {
   name: string;
@@ -88,6 +89,15 @@ export default function ChartPatternExplorer() {
                   </div>
                   <h3 className="font-display text-xl text-foreground">{selectedPattern.name}</h3>
                 </div>
+
+                {/* SVG Visualizer */}
+                <div className="bg-background rounded-xl border border-border/60 p-6 flex justify-center items-center shadow-inner overflow-hidden relative">
+                   <div className="absolute inset-0 bg-grid-white/5 bg-[size:10px_10px]" />
+                   <div className="relative z-10 w-full max-w-[200px] aspect-[4/3] flex items-center justify-center">
+                      <ChartPatternVisualizer name={selectedPattern.name} bias={selectedPattern.bias} />
+                   </div>
+                </div>
+
                 <p className="text-sm text-muted-foreground leading-relaxed">{selectedPattern.description}</p>
                 <div className="space-y-2">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Key Features</h4>
@@ -112,5 +122,88 @@ export default function ChartPatternExplorer() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ChartPatternVisualizer({ name, bias }: { name: string, bias: string }) {
+  const isBull = bias === "bullish";
+  const isBear = bias === "bearish";
+  const color = isBull ? "#10b981" : isBear ? "#ef4444" : "#8b5cf6";
+  const secondaryColor = "#64748b"; // For necklines / trendlines
+
+  const renderPattern = () => {
+    switch (name) {
+      case "Double Bottom":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            {/* Neckline */}
+            <line x1="10" y1="30" x2="90" y2="30" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            {/* W Shape */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,20 30,70 50,30 70,70 90,10" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} cx="90" cy="10" r="4" fill={color} />
+          </svg>
+        );
+      case "Double Top":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            {/* Neckline */}
+            <line x1="10" y1="50" x2="90" y2="50" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            {/* M Shape */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,60 30,10 50,50 70,10 90,70" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} cx="90" cy="70" r="4" fill={color} />
+          </svg>
+        );
+      case "Head and Shoulders":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            <line x1="10" y1="60" x2="90" y2="60" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,70 25,30 40,60 50,10 60,60 75,30 90,80" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} cx="90" cy="80" r="4" fill={color} />
+          </svg>
+        );
+      case "Inverse Head and Shoulders":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            <line x1="10" y1="20" x2="90" y2="20" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,10 25,50 40,20 50,70 60,20 75,50 90,0" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} cx="90" cy="0" r="4" fill={color} />
+          </svg>
+        );
+      case "Ascending Triangle":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            {/* Top Resistance */}
+            <line x1="10" y1="20" x2="90" y2="20" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            {/* Bottom Support */}
+            <line x1="10" y1="80" x2="80" y2="20" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            {/* Price action */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,70 30,20 50,45 65,20 75,30 90,5" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        );
+      case "Descending Triangle":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            {/* Bottom Support */}
+            <line x1="10" y1="60" x2="90" y2="60" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            {/* Top Resistance */}
+            <line x1="10" y1="10" x2="80" y2="60" stroke={secondaryColor} strokeWidth="1" strokeDasharray="4 4" />
+            {/* Price action */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,10 30,60 50,35 65,60 75,50 90,80" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        );
+      default:
+        // Generic Line
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="10,60 30,30 50,50 70,20 90,40" fill="none" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        );
+    }
+  };
+
+  return (
+    <motion.div key={name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full h-full">
+      {renderPattern()}
+    </motion.div>
   );
 }

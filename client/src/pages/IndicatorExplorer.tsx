@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 interface Indicator {
   name: string;
@@ -82,6 +82,15 @@ export default function IndicatorExplorer() {
                   <span className="text-xs px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">{selectedIndicator.category}</span>
                   <h3 className="font-display text-xl text-foreground mt-2">{selectedIndicator.name}</h3>
                 </div>
+
+                {/* SVG Visualizer */}
+                <div className="bg-background rounded-xl border border-border/60 p-6 flex justify-center items-center shadow-inner overflow-hidden relative">
+                   <div className="absolute inset-0 bg-grid-white/5 bg-[size:10px_10px]" />
+                   <div className="relative z-10 w-full max-w-[200px] aspect-[4/3] flex items-center justify-center">
+                      <IndicatorVisualizer name={selectedIndicator.name} />
+                   </div>
+                </div>
+
                 <p className="text-sm text-muted-foreground leading-relaxed">{selectedIndicator.description}</p>
                 <div className="space-y-2 text-sm">
                   <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Usage</h4>
@@ -105,5 +114,78 @@ export default function IndicatorExplorer() {
         </div>
       </div>
     </div>
+  );
+}
+
+function IndicatorVisualizer({ name }: { name: string }) {
+  const primary = "#10b981"; // Emerald
+  const secondary = "#6366f1"; // Indigo
+  const tertiary = "#ef4444"; // Red
+  const grid = "#334155";
+
+  const renderPattern = () => {
+    switch (name) {
+      case "Relative Strength Index (RSI)":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            <line x1="0" y1="20" x2="100" y2="20" stroke={grid} strokeWidth="1" strokeDasharray="4 4" />
+            <text x="10" y="15" fontSize="8" fill={grid}>70</text>
+            <line x1="0" y1="60" x2="100" y2="60" stroke={grid} strokeWidth="1" strokeDasharray="4 4" />
+            <text x="10" y="70" fontSize="8" fill={grid}>30</text>
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} points="0,50 20,25 40,35 60,15 80,65 100,45" fill="none" stroke={secondary} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} cx="60" cy="15" r="3" fill={tertiary} />
+            <motion.circle initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }} cx="80" cy="65" r="3" fill={primary} />
+          </svg>
+        );
+      case "MACD (Moving Average Convergence Divergence)":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            <line x1="0" y1="50" x2="100" y2="50" stroke={grid} strokeWidth="1" />
+            {/* Histogram */}
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5 }} style={{ originY: 1 }} x="20" y="30" width="4" height="20" fill={primary} opacity={0.6} />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5, delay: 0.1 }} style={{ originY: 1 }} x="40" y="40" width="4" height="10" fill={primary} opacity={0.6} />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5, delay: 0.2 }} style={{ originY: 0 }} x="60" y="50" width="4" height="15" fill={tertiary} opacity={0.6} />
+            <motion.rect initial={{ scaleY: 0 }} animate={{ scaleY: 1 }} transition={{ duration: 0.5, delay: 0.3 }} style={{ originY: 0 }} x="80" y="50" width="4" height="25" fill={tertiary} opacity={0.6} />
+            {/* MACD Line */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }} points="0,20 30,25 60,60 100,75" fill="none" stroke={secondary} strokeWidth="2" />
+            {/* Signal Line */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }} points="0,30 35,35 60,50 100,60" fill="none" stroke="#f59e0b" strokeWidth="2" />
+          </svg>
+        );
+      case "Bollinger Bands":
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            {/* Shaded Area */}
+            <motion.polygon initial={{ opacity: 0 }} animate={{ opacity: 0.1 }} transition={{ duration: 1 }} points="0,20 50,40 100,30 100,70 50,60 0,50" fill={secondary} />
+            {/* Upper Band */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }} points="0,20 50,40 100,30" fill="none" stroke={secondary} strokeWidth="1" strokeDasharray="2 2" />
+            {/* Lower Band */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }} points="0,50 50,60 100,70" fill="none" stroke={secondary} strokeWidth="1" strokeDasharray="2 2" />
+            {/* Middle SMA */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }} points="0,35 50,50 100,50" fill="none" stroke="#f59e0b" strokeWidth="1.5" />
+            {/* Price line bouncing inside */}
+            <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.5 }} points="0,40 25,55 50,40 75,30 100,60" fill="none" stroke={primary} strokeWidth="2" />
+          </svg>
+        );
+      default:
+        // Generic Moving Average
+        return (
+          <svg viewBox="0 0 100 80" className="w-full h-full drop-shadow-md overflow-visible">
+            {/* Price Candles stub */}
+            <rect x="20" y="30" width="4" height="20" fill={primary} />
+            <rect x="40" y="20" width="4" height="25" fill={tertiary} />
+            <rect x="60" y="40" width="4" height="15" fill={primary} />
+            <rect x="80" y="30" width="4" height="30" fill={tertiary} />
+            {/* Smooth Indicator Curve */}
+            <motion.path initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, ease: "easeInOut" }} d="M0,50 Q25,20 50,40 T100,35" fill="none" stroke={secondary} strokeWidth="3" />
+          </svg>
+        );
+    }
+  };
+
+  return (
+    <motion.div key={name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="w-full h-full">
+      {renderPattern()}
+    </motion.div>
   );
 }
