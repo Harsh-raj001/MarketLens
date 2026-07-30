@@ -98,9 +98,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Logo */}
         <div className="p-6 border-b border-border/50">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 shrink-0 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:rotate-3 relative">
-              <Search className="w-5 h-5 absolute" />
-              <TrendingUp className="w-3 h-3 absolute mt-2 ml-2" />
+            <div className="w-10 h-10 shrink-0 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg transition-transform duration-500 group-hover:scale-105 group-hover:shadow-primary/50 relative overflow-hidden">
+              <svg viewBox="0 0 100 100" className="w-6 h-6 text-primary-foreground group-hover:rotate-[180deg] transition-transform duration-700 ease-in-out">
+                {/* Outer Lens */}
+                <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" />
+                {/* Inner Lens Ring */}
+                <circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="6 6" className="group-hover:stroke-primary-foreground/50 transition-colors" />
+                {/* Candlestick */}
+                <line x1="50" y1="25" x2="50" y2="75" stroke="currentColor" strokeWidth="6" strokeLinecap="round" className="group-hover:scale-y-110 origin-center transition-transform" />
+                <rect x="40" y="35" width="20" height="30" fill="currentColor" rx="3" />
+              </svg>
             </div>
             <div>
               <h1 className="font-display text-xl font-bold text-foreground leading-tight tracking-tight">
@@ -182,9 +189,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className="w-5 h-5" />
             </Button>
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 shrink-0 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm relative">
-                <Search className="w-4 h-4 absolute" />
-                <TrendingUp className="w-2.5 h-2.5 absolute mt-1.5 ml-1.5" />
+              <div className="w-8 h-8 shrink-0 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-sm group">
+                <svg viewBox="0 0 100 100" className="w-5 h-5 text-primary-foreground">
+                  <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" />
+                  <line x1="50" y1="25" x2="50" y2="75" stroke="currentColor" strokeWidth="6" strokeLinecap="round" />
+                  <rect x="40" y="35" width="20" height="30" fill="currentColor" rx="3" />
+                </svg>
               </div>
               <span className="font-display text-lg font-bold">MarketLens</span>
             </div>

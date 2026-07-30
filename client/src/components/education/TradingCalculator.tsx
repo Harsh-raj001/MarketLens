@@ -3,7 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Info } from "lucide-react";
+import { Info, Download, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 export function TradingCalculator() {
   const [buyPrice, setBuyPrice] = useState<number | "">(100);
@@ -154,6 +156,30 @@ export function TradingCalculator() {
             </span>
           </div>
         </div>
+
+        {/* Educational Narrative */}
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="md:col-span-2 mt-2">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl p-5 shadow-inner">
+            <h4 className="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
+              <ChevronRight className="w-4 h-4 text-primary" /> What does this mean?
+            </h4>
+            <p className="text-sm text-slate-400 leading-relaxed font-serif italic">
+              Out of your {formatCurrency(Math.abs(grossProfit))} {grossProfit >= 0 ? 'profit' : 'loss'}, 
+              a total of <span className="text-red-400 font-semibold">{formatCurrency(totalTaxesAndCharges)}</span> went to taxes and fees.
+              {stt > 0 && ` The largest chunk was STT at ${formatCurrency(stt)}.`}
+              {brokerage > 0 && ` Your broker took ${formatCurrency(brokerage)}.`}
+              <br/><br/>
+              <strong className="text-slate-300 font-sans not-italic">Key Takeaway:</strong> High-frequency trading or small point scalping can quickly turn a winning strategy into a net loss once fees are applied.
+            </p>
+            
+            <div className="mt-6 flex justify-end">
+              <Button variant="outline" className="bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white group">
+                <Download className="w-4 h-4 mr-2 group-hover:-translate-y-0.5 transition-transform" />
+                Download PDF Summary
+              </Button>
+            </div>
+          </div>
+        </motion.div>
 
       </div>
     </div>
