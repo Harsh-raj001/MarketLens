@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const features = [
   {
@@ -82,7 +83,7 @@ export default function Home() {
     <div className="space-y-24 lg:space-y-32 pb-16">
       {/* Interactive Hero Section */}
       <section className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[70vh]">
-        <div className="space-y-8 relative z-10">
+        <ScrollReveal direction="left" className="space-y-8 relative z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
             <Sparkles className="w-4 h-4" />
             AI-Powered Trading Education
@@ -110,10 +111,10 @@ export default function Home() {
               Press <kbd className="font-sans px-1.5 py-0.5 bg-background rounded border border-border shadow-sm text-xs">⌘</kbd> <kbd className="font-sans px-1.5 py-0.5 bg-background rounded border border-border shadow-sm text-xs">K</kbd> anywhere
             </div>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Dynamic Hero Demo Workspace */}
-        <div className="relative">
+        <ScrollReveal direction="right" className="relative">
           <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-card border border-border/60 flex flex-col relative z-10">
              {/* Window Header */}
              <div className="h-12 border-b border-border/50 bg-muted/30 flex items-center px-4 gap-2">
@@ -234,28 +235,32 @@ export default function Home() {
           {/* Decorative glow */}
           <div className="absolute -bottom-8 -right-8 w-64 h-64 bg-primary/20 rounded-full blur-3xl -z-10" />
           <div className="absolute -top-8 -left-8 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -z-10" />
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Features Grid */}
       <section className="space-y-10">
-        <div className="text-center max-w-2xl mx-auto space-y-4">
+        <ScrollReveal direction="up" className="text-center max-w-2xl mx-auto space-y-4">
           <h2 className="font-display text-3xl md:text-4xl text-foreground tracking-tight">Everything you need to build market literacy</h2>
           <p className="text-muted-foreground text-lg">A complete ecosystem designed to take you from basic concepts to advanced pattern recognition.</p>
-        </div>
+        </ScrollReveal>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f, i) => (
-            <Link key={i} href={f.href}>
-              <Card className="h-full border-border/60 bg-card hover:border-primary/30 transition-all duration-300 card-hover cursor-pointer group">
-                <CardContent className="p-8 space-y-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                    <f.icon className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-semibold text-foreground text-lg">{f.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{f.description}</p>
-                </CardContent>
-              </Card>
-            </Link>
+            <ScrollReveal key={i} delay={i * 0.1}>
+              <Link href={f.href}>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Card className="h-full border-border/60 bg-card hover:border-primary/30 transition-all duration-300 card-hover cursor-pointer group">
+                    <CardContent className="p-8 space-y-4">
+                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+                        <f.icon className="w-6 h-6" />
+                      </div>
+                      <h3 className="font-semibold text-foreground text-lg">{f.title}</h3>
+                      <p className="text-muted-foreground leading-relaxed">{f.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Link>
+            </ScrollReveal>
           ))}
         </div>
       </section>
@@ -317,25 +322,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Popular Tools */}
-      <section className="space-y-10 border-t border-border/50 pt-16">
-        <div className="text-center max-w-2xl mx-auto space-y-4">
+      {/* Trading Toolkit */}
+      <section className="space-y-10">
+        <ScrollReveal direction="up" className="text-center max-w-2xl mx-auto space-y-4">
           <h2 className="font-display text-3xl md:text-4xl text-foreground tracking-tight">Trading Toolkit</h2>
           <p className="text-muted-foreground text-lg">Calculate exactly what you risk and what you pay.</p>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        </ScrollReveal>
+        <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-4">
           {tools.map((t, i) => (
-            <Link key={i} href={t.href}>
-              <Card className="h-full border-border/60 bg-card hover:border-primary/30 transition-all duration-300 card-hover cursor-pointer group">
-                <CardContent className="p-6 space-y-4">
-                  <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
-                    <t.icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-semibold text-foreground text-sm">{t.label}</h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{t.desc}</p>
-                </CardContent>
-              </Card>
-            </Link>
+            <ScrollReveal key={i} delay={i * 0.05} direction="up">
+              <Link href={t.href}>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Card className="h-full border-border/50 bg-secondary/20 hover:bg-secondary/40 hover:border-primary/30 transition-all duration-300 card-hover cursor-pointer group text-center py-6">
+                    <CardContent className="p-0 space-y-3 flex flex-col items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl bg-secondary flex items-center justify-center text-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                        <t.icon className="w-5 h-5" />
+                      </div>
+                      <h3 className="font-semibold text-foreground text-sm">{t.label}</h3>
+                      <p className="text-[10px] text-muted-foreground leading-tight px-2">{t.desc}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Link>
+            </ScrollReveal>
           ))}
         </div>
       </section>

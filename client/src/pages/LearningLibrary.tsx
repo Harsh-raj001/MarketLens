@@ -20,6 +20,8 @@ const lessons = [
 const categories = ["All", "Basics", "Technical Analysis", "Indicators", "Risk Management", "Psychology"];
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export default function LearningLibrary() {
   const [activeCategory, setActiveCategory] = useState("All");
@@ -30,10 +32,10 @@ export default function LearningLibrary() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <ScrollReveal direction="down">
         <h1 className="font-display text-3xl text-foreground">Learning Library</h1>
         <p className="text-muted-foreground mt-1">Browse all structured lessons organized by topic and difficulty.</p>
-      </div>
+      </ScrollReveal>
 
       {/* Category filter */}
       <div className="flex flex-wrap gap-2">
@@ -53,10 +55,20 @@ export default function LearningLibrary() {
       </div>
 
       {/* Lessons grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((lesson) => (
-          <Link key={lesson.id} href={`/lesson/${lesson.id}`}>
-            <Card className="group hover:shadow-md transition-shadow duration-200 border-border/60 cursor-pointer h-full">
+      <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <AnimatePresence mode="popLayout">
+          {filtered.map((lesson) => (
+            <motion.div
+              key={lesson.id}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Link href={`/lesson/${lesson.id}`}>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="h-full">
+                  <Card className="group hover:shadow-md transition-shadow duration-200 border-border/60 cursor-pointer h-full">
               <CardContent className="p-5 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">
@@ -81,9 +93,12 @@ export default function LearningLibrary() {
                 </div>
               </CardContent>
             </Card>
-          </Link>
-        ))}
-      </div>
+                </motion.div>
+              </Link>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }

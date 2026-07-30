@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2, Circle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { motion } from "framer-motion";
 
 const paths = [
   {
@@ -50,15 +52,17 @@ const paths = [
 export default function LearningPath() {
   return (
     <div className="space-y-8">
-      <div>
+      <ScrollReveal direction="down">
         <h1 className="font-display text-3xl text-foreground">Learning Paths</h1>
         <p className="text-muted-foreground mt-1">Choose a structured curriculum and progress at your own pace.</p>
-      </div>
+      </ScrollReveal>
 
       <div className="grid md:grid-cols-2 gap-6">
-        {paths.map((path) => (
-          <Card key={path.id} className="border-border/60 overflow-hidden">
-            <div className={`h-1.5 ${path.color}`} />
+        {paths.map((path, i) => (
+          <ScrollReveal key={path.id} delay={i * 0.1}>
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+              <Card className="border-border/60 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                <div className={`h-1.5 ${path.color}`} />
             <CardContent className="p-6 space-y-4">
               <div className="flex items-start justify-between">
                 <div>
@@ -109,8 +113,10 @@ export default function LearningPath() {
                   {path.completed > 0 ? "Continue Learning" : "Start Path"} <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
+              </CardContent>
+              </Card>
+            </motion.div>
+          </ScrollReveal>
         ))}
       </div>
     </div>
