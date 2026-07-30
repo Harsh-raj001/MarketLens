@@ -21,7 +21,9 @@ import {
   Building2,
   PlayCircle,
   PieChart,
-  Flame
+  Flame,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/useMobile";
@@ -90,6 +92,7 @@ const navGroups = [
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const isMobile = useIsMobile();
 
   return (
@@ -106,7 +109,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:sticky top-0 left-0 h-screen z-50 lg:z-10 w-72 bg-card border-r border-border flex flex-col transition-transform duration-300 ease-out shadow-sm ${
+        className={`fixed lg:sticky top-0 left-0 h-screen z-50 lg:z-10 ${isCollapsed ? 'w-20' : 'w-72'} bg-card border-r border-border flex flex-col transition-all duration-300 ease-in-out shadow-sm ${
           isMobile
             ? sidebarOpen
               ? "translate-x-0"
@@ -114,42 +117,75 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             : "translate-x-0"
         }`}
       >
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="absolute -right-4 top-8 z-50 h-8 w-8 rounded-full hidden lg:flex shadow-sm bg-background hover:bg-muted"
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </Button>
+
         {/* Logo */}
-        <div className="p-6 border-b border-border/50">
-          <Link href="/" className="flex items-center gap-3 group">
+        <div className="p-6 border-b border-border/50 overflow-hidden">
+          <Link href="/" className={`flex items-center gap-3 group ${isCollapsed ? 'justify-center' : ''}`}>
             <div className="w-10 h-10 shrink-0 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 shadow-sm transition-transform duration-500 group-hover:scale-105 group-hover:shadow-md relative overflow-hidden border border-teal-100">
               <LensyLogo className="w-7 h-7 group-hover:-rotate-12 transition-transform duration-500 ease-out" />
             </div>
-            <div>
-              <h1 className="font-display text-xl font-bold text-slate-900 leading-tight tracking-tight">
-                MarketLens
-              </h1>
-              <p className="text-[11px] text-teal-600 font-semibold tracking-wider mt-0.5">
-                Your friendly market companion.
-              </p>
-            </div>
+            {!isCollapsed && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="overflow-hidden whitespace-nowrap">
+                <h1 className="font-display text-xl font-bold text-slate-900 leading-tight tracking-tight">
+                  MarketLens
+                </h1>
+                <p className="text-[11px] text-teal-600 font-semibold tracking-wider mt-0.5">
+                  Your friendly market companion.
+                </p>
+              </motion.div>
+            )}
           </Link>
+          
+          {isMobile && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(false)}
+              className="absolute right-4 top-6 text-muted-foreground hover:text-foreground"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          )}
+
           {/* Cmd K hint */}
           <div 
             onClick={() => window.dispatchEvent(new CustomEvent('open-command-palette'))}
-            className="mt-6 flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg border border-border/50 text-xs text-muted-foreground font-medium cursor-pointer hover:bg-muted transition-colors"
+            className={`mt-6 flex items-center ${isCollapsed ? 'justify-center p-2' : 'justify-between px-3 py-2'} bg-muted/50 rounded-lg border border-border/50 text-xs text-muted-foreground font-medium cursor-pointer hover:bg-muted transition-colors`}
           >
-            <span>Search</span>
-            <div className="flex gap-1">
-              <kbd className="px-1.5 py-0.5 bg-background rounded border border-border/60 shadow-sm font-sans">⌘</kbd>
-              <kbd className="px-1.5 py-0.5 bg-background rounded border border-border/60 shadow-sm font-sans">K</kbd>
-            </div>
+            {isCollapsed ? (
+              <Search className="w-4 h-4" />
+            ) : (
+              <>
+                <span>Search</span>
+                <div className="flex gap-1">
+                  <kbd className="px-1.5 py-0.5 bg-background rounded border border-border/60 shadow-sm font-sans">⌘</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-background rounded border border-border/60 shadow-sm font-sans">K</kbd>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-6 px-4">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-4">
           <div className="space-y-8">
             {navGroups.map((group) => (
               <div key={group.title}>
-                <h3 className="px-2 text-xs font-bold text-muted-foreground/70 tracking-widest uppercase mb-3">
-                  {group.title}
-                </h3>
+                {!isCollapsed ? (
+                  <h3 className="px-2 text-xs font-bold text-muted-foreground/70 tracking-widest uppercase mb-3">
+                    {group.title}
+                  </h3>
+                ) : (
+                  <div className="h-6" /> // spacer
+                )}
                 <div className="space-y-1">
                   {group.items.map((item) => {
                     const isActive = location === item.href;
@@ -158,20 +194,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         key={item.href}
                         href={item.href}
                         onClick={() => isMobile && setSidebarOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group ${
+                        className={`flex items-center ${isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2.5'} rounded-lg text-sm font-medium transition-all duration-200 group relative ${
                           isActive
                             ? "bg-primary/10 text-primary"
                             : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                         }`}
+                        title={isCollapsed ? item.label : undefined}
                       >
                         <item.icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
-                        <span className="truncate">{item.label}</span>
-                        {isActive && (
+                        {!isCollapsed && <span className="truncate">{item.label}</span>}
+                        {isActive && !isCollapsed && (
                           <motion.div 
                             layoutId="activeNav"
                             className="absolute left-0 w-1 h-8 bg-primary rounded-r-full"
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
                           />
+                        )}
+                        {isActive && isCollapsed && (
+                          <div className="absolute left-0 w-1 h-6 bg-primary rounded-r-full" />
                         )}
                       </Link>
                     );
@@ -183,11 +223,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Bottom disclaimer */}
-        <div className="p-5 border-t border-border/50 bg-muted/20">
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            This platform is strictly educational. No buy/sell signals, no investment advice.
-          </p>
-        </div>
+        {!isCollapsed && (
+          <div className="p-5 border-t border-border/50 bg-muted/20">
+            <p className="text-xs text-muted-foreground leading-relaxed whitespace-nowrap overflow-hidden">
+              This platform is strictly educational. No buy/sell signals, no investment advice.
+            </p>
+          </div>
+        )}
       </aside>
 
       {/* Main content */}

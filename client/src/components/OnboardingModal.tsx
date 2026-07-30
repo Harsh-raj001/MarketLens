@@ -46,7 +46,7 @@ export function OnboardingModal() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl w-full bg-card border border-border/60 shadow-2xl rounded-3xl p-8 lg:p-12"
+            className="max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-card border border-border/60 shadow-2xl rounded-3xl p-6 lg:p-12"
           >
             <div className="text-center space-y-4 mb-10">
               <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
@@ -88,7 +88,7 @@ export function OnboardingModal() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="max-w-2xl w-full bg-card border border-border/60 shadow-2xl rounded-3xl p-8 lg:p-12"
+            className="max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-card border border-border/60 shadow-2xl rounded-3xl p-6 lg:p-12"
           >
             <div className="text-center space-y-4 mb-10">
               <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-6">
