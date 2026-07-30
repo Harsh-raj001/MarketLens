@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search, Check
+  MessageSquare, Brain, Target, Shield, TrendingUp, Sparkles, Command, BookOpen, BarChart3, Search, Check, ArrowRight
 } from "lucide-react";
 
 // --- Custom 3D Card Wrapper ---
