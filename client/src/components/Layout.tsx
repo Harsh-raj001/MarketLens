@@ -31,6 +31,7 @@ import FloatingAIChat from "./ai/FloatingAIChat";
 import { CommandPalette } from "./ui/CommandPalette";
 import { AnimatePresence, motion } from "framer-motion";
 import { LensyLogo } from "./ui/LensyLogo";
+import { Footer } from "./Footer";
 
 const navGroups = [
   {
@@ -266,6 +267,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </motion.div>
           </AnimatePresence>
         </div>
+        
+        {/* Global Footer */}
+        <Footer />
       </main>
 
       {/* Global AI Chat */}
