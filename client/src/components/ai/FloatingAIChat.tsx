@@ -3,7 +3,6 @@ import { MessageSquare, X, Send, Bot, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Link } from "wouter";
 import { useUser } from "@/contexts/UserContext";
 import { LensyLogo } from "../ui/LensyLogo";
@@ -83,10 +82,15 @@ export default function FloatingAIChat() {
             </Button>
           </div>
           
-          <ScrollArea className="flex-1 p-4" ref={scrollContainerRef}>
-            <div className="space-y-4 pb-4">
+          <div className="flex-1 p-4 overflow-y-auto custom-scrollbar" ref={scrollContainerRef}>
+            <div className="space-y-4 pb-2">
               {messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div key={i} className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  {msg.role === "ai" && (
+                    <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0 mt-1">
+                      <Bot className="w-4 h-4 text-teal-600" />
+                    </div>
+                  )}
                   <div className={`max-w-[85%] p-3 rounded-2xl ${msg.role === "user" ? "bg-teal-500 text-white rounded-br-sm shadow-sm" : "bg-white border border-slate-200 text-slate-800 rounded-bl-sm shadow-sm"}`}>
                     <div className="text-sm">
                       {typeof msg.content === "string" ? (
@@ -118,7 +122,7 @@ export default function FloatingAIChat() {
               ))}
               <div ref={messagesEndRef} />
             </div>
-          </ScrollArea>
+          </div>
 
           <div className="p-3 bg-muted/50 border-t border-border">
             <div className="text-[10px] text-center text-muted-foreground mb-2">

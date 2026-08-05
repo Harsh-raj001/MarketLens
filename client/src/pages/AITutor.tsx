@@ -54,7 +54,7 @@ export default function AITutor() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 h-[calc(100vh-6rem)]">
+    <div className="max-w-4xl mx-auto flex flex-col space-y-6 h-[calc(100vh-6rem)]">
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
           <Bot className="w-5 h-5 text-primary" />
@@ -74,7 +74,7 @@ export default function AITutor() {
       </div>
 
       {/* Chat messages */}
-      <div className="flex-1 overflow-y-auto space-y-6 pb-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 pb-4 pr-2">
         {messages.map((msg) => (
           <div
             key={msg.id}
