@@ -4,15 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { sampleResponses } from "../../data/knowledgeBase";
 import { Link } from "wouter";
 import { useUser } from "@/contexts/UserContext";
 import { LensyLogo } from "../ui/LensyLogo";
-
-interface Message {
-  role: "user" | "ai";
-  content: string;
-}
+import { generateMockResponse, Message } from "../../lib/mockAI";
+import ReactMarkdown from "react-markdown";
 
 export default function FloatingAIChat() {
   const { profile } = useUser();
@@ -21,11 +17,16 @@ export default function FloatingAIChat() {
     { role: "ai", content: "Hi! I'm Lensy. Ask me about candlesticks, patterns, indicators, or market psychology." }
   ]);
   const [input, setInput] = useState("");
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (isOpen) {
+      setTimeout(scrollToBottom, 100);
     }
   }, [messages, isOpen]);
 
@@ -35,13 +36,14 @@ export default function FloatingAIChat() {
       if (e.detail?.prompt) {
         // Delay slightly for animation
         setTimeout(() => {
-          setMessages(prev => [...prev, { role: "user", content: e.detail.prompt }]);
+          const newMessages: Message[] = [...messages, { role: "user", content: e.detail.prompt }];
+          setMessages(newMessages);
           
-          // Basic contextual response generator
           setTimeout(() => {
+            const responseContent = generateMockResponse(newMessages, profile?.experienceLevel);
             setMessages(prev => [...prev, { 
               role: "ai", 
-              content: `Great question! Here is a deep dive based on your ${profile.experienceLevel || 'current'} level:\n\n1. **Core Idea**: It's all about risk management and understanding intrinsic value.\n2. **Practical Example**: If a stock is trading at ₹100 but its intrinsic value is ₹150, that's a margin of safety.\n\nWould you like me to explain how to calculate intrinsic value?` 
+              content: responseContent
             }]);
           }, 600);
         }, 300);
@@ -50,55 +52,18 @@ export default function FloatingAIChat() {
 
     window.addEventListener('open-lens-ai', handleOpenLensAi);
     return () => window.removeEventListener('open-lens-ai', handleOpenLensAi);
-  }, []);
+  }, [messages, profile?.experienceLevel]);
 
   const handleSend = () => {
     if (!input.trim()) return;
     const userMsg = input.trim();
-    setMessages((prev) => [...prev, { role: "user", content: userMsg }]);
+    const newMessages: Message[] = [...messages, { role: "user", content: userMsg }];
+    setMessages(newMessages);
     setInput("");
 
     setTimeout(() => {
-      const lowerInput = userMsg.toLowerCase();
-      
-      // Check for refusals
-      if (lowerInput.includes("buy") || lowerInput.includes("sell") || lowerInput.includes("signal") || lowerInput.includes("recommend")) {
-        setMessages((prev) => [...prev, { role: "ai", content: "I'm sorry, but I can't provide buy/sell signals or investment recommendations. This platform is strictly for educational purposes." }]);
-        return;
-      }
-
-      // Check for profit/costs calculator
-      if (lowerInput.includes("profit") || lowerInput.includes("cost") || lowerInput.includes("brokerage") || lowerInput.includes("tax") || lowerInput.includes("charges")) {
-        setMessages((prev) => [...prev, { 
-          role: "ai", 
-          content: `**Real Trading Costs**: Brokerage is just one part of the cost. The government and exchanges levy several non-negotiable charges that heavily impact short-term trading profitability.\n\nI have a built-in Trading Cost Calculator! Open the Interactive Lens AI to see exactly how STT, GST, and Stamp Duty affect your net profit.` 
-        }]);
-        return;
-      }
-
-      // Check sampleResponses
-      let found = false;
-      for (const [key, lesson] of Object.entries(sampleResponses)) {
-        if (lowerInput.includes(key.toLowerCase())) {
-          found = true;
-          let prefix = "";
-          if (profile.experienceLevel === 'new' || profile.experienceLevel === 'basics') {
-            prefix = "Since you're learning the basics, let's keep this simple (like a car speedometer):\n\n";
-          } else if (profile.experienceLevel === 'occasional' || profile.experienceLevel === 'active') {
-            prefix = "Since you have some trading experience, let's look at the technical formulas and failure conditions:\n\n";
-          }
-          
-          setMessages((prev) => [...prev, { 
-            role: "ai", 
-            content: `${prefix}**${lesson.topic}**: ${lesson.description}\n\nI have a full interactive visual lesson on this! Open the Interactive Lens AI to see the chart, psychology, and historical examples.` 
-          }]);
-          break;
-        }
-      }
-
-      if (!found) {
-        setMessages((prev) => [...prev, { role: "ai", content: "I'm not sure about that. Try asking about a 'Hammer', 'Doji', 'Engulfing', 'RSI', or 'Trading Costs'." }]);
-      }
+      const responseContent = generateMockResponse(newMessages, profile?.experienceLevel);
+      setMessages(prev => [...prev, { role: "ai", content: responseContent }]);
     }, 500);
   };
 
@@ -118,13 +83,26 @@ export default function FloatingAIChat() {
             </Button>
           </div>
           
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-            <div className="space-y-4">
+          <ScrollArea className="flex-1 p-4" ref={scrollContainerRef}>
+            <div className="space-y-4 pb-4">
               {messages.map((msg, i) => (
                 <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div className={`max-w-[85%] p-3 rounded-2xl ${msg.role === "user" ? "bg-teal-500 text-white rounded-br-sm shadow-sm" : "bg-white border border-slate-200 text-slate-800 rounded-bl-sm shadow-sm"}`}>
-                    <span className="text-sm whitespace-pre-wrap">{msg.content}</span>
-                    {msg.role === "ai" && msg.content.includes("Interactive Lens AI") && (
+                    <div className="text-sm">
+                      {typeof msg.content === "string" ? (
+                        <ReactMarkdown className="prose prose-sm prose-teal max-w-none dark:prose-invert">
+                          {msg.content}
+                        </ReactMarkdown>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="font-bold">{msg.content.topic}</p>
+                          <ReactMarkdown className="prose prose-sm prose-teal max-w-none dark:prose-invert">
+                            {msg.content.description}
+                          </ReactMarkdown>
+                        </div>
+                      )}
+                    </div>
+                    {msg.role === "ai" && (typeof msg.content !== "string" || msg.content.includes("Interactive Lens AI") || msg.content.includes("visual lesson")) && (
                       <Link href="/ai-tutor">
                         <Button variant="outline" size="sm" className="mt-3 w-full gap-2 text-xs h-8" onClick={() => setIsOpen(false)}>
                           Open Full Lesson <ExternalLink className="w-3 h-3" />
@@ -134,6 +112,7 @@ export default function FloatingAIChat() {
                   </div>
                 </div>
               ))}
+              <div ref={messagesEndRef} />
             </div>
           </ScrollArea>
 

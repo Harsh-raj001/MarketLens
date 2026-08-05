@@ -2,16 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Bot, User, AlertTriangle } from "lucide-react";
-import { sampleResponses, LessonSpecification } from "@/data/knowledgeBase";
 import { LessonRenderer } from "@/components/education/LessonRenderer";
-
-type MessageContent = string | LessonSpecification;
-
-interface Message {
-  id: number;
-  role: "user" | "assistant";
-  content: MessageContent;
-}
+import { generateMockResponse, Message } from "@/lib/mockAI";
+import ReactMarkdown from "react-markdown";
 
 const suggestedQuestions = [
   "Explain the Hammer candlestick",
@@ -32,67 +25,33 @@ export default function AITutor() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const getResponse = (query: string): MessageContent => {
-    const lower = query.toLowerCase();
-    
-    // Check for disallowed topics
-    if (lower.includes("buy") || lower.includes("sell") || lower.includes("signal") || lower.includes("recommend")) {
-      return "I'm sorry, but I can't provide buy/sell signals or investment recommendations. This platform is strictly for educational purposes. I can help you understand concepts, analyze patterns, and learn risk management principles. Would you like to ask about a specific trading concept instead?";
-    }
-
-    // Check for calculator
-    if (lower.includes("profit") || lower.includes("cost") || lower.includes("brokerage") || lower.includes("tax") || lower.includes("charges")) {
-      if (sampleResponses["trading costs"]) {
-        return sampleResponses["trading costs"];
-      }
-    }
-
-    // Pseudo-semantic search intent mapping
-    const intentMap: Record<string, string> = {
-      "fake breakout": "head and shoulders",
-      "fake breakdown": "head and shoulders",
-      "indecision": "doji",
-      "momentum": "rsi",
-      "reversal": "hammer",
-    };
-    
-    for (const [intent, key] of Object.entries(intentMap)) {
-      if (lower.includes(intent)) {
-        return sampleResponses[key];
-      }
-    }
-
-    // Try to find a structured lesson specification
-    for (const [key, lesson] of Object.entries(sampleResponses)) {
-      if (lower.includes(key.toLowerCase())) {
-        return lesson;
-      }
-    }
-    
-    return "That's an interesting question! While I don't have a specific visual lesson for this exact query yet, I'd recommend exploring our Learning Library for structured content on this topic. You can also try asking about a 'Hammer', 'Doji', 'Engulfing', or 'RSI'.";
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, isTyping]);
 
   const handleSend = (text: string) => {
     if (!text.trim()) return;
     const userMsg: Message = { id: Date.now(), role: "user", content: text.trim() };
-    setMessages((prev) => [...prev, userMsg]);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setInput("");
     setIsTyping(true);
 
     setTimeout(() => {
+      const responseContent = generateMockResponse(newMessages);
       const response: Message = {
         id: Date.now() + 1,
         role: "assistant",
-        content: getResponse(text),
+        content: responseContent,
       };
       setMessages((prev) => [...prev, response]);
       setIsTyping(false);
     }, 1200); // slightly longer delay to simulate "assembling" the lesson
   };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 h-[calc(100vh-6rem)]">
@@ -134,7 +93,11 @@ export default function AITutor() {
               }`}
             >
               {typeof msg.content === "string" ? (
-                <span className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</span>
+                <div className="text-sm">
+                  <ReactMarkdown className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert text-primary-foreground" : "dark:prose-invert prose-teal"}`}>
+                    {msg.content}
+                  </ReactMarkdown>
+                </div>
               ) : (
                 <LessonRenderer lesson={msg.content} onTopicClick={handleSend} />
               )}
