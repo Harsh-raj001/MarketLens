@@ -94,9 +94,11 @@ export default function AITutor() {
             >
               {typeof msg.content === "string" ? (
                 <div className="text-sm">
-                  <ReactMarkdown className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert text-primary-foreground" : "dark:prose-invert prose-teal"}`}>
-                    {msg.content}
-                  </ReactMarkdown>
+                  <div className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert text-primary-foreground" : "dark:prose-invert prose-teal"}`}>
+                    <ReactMarkdown>
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
                 </div>
               ) : (
                 <LessonRenderer lesson={msg.content} onTopicClick={handleSend} />

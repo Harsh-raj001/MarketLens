@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, FastForward, LineChart } from "lucide-react";
+import { PlayCircle, FastForward, LineChart, History } from "lucide-react";
 import { HistoricalChart } from "./HistoricalChart";
 
 interface HistoricalReplayProps {
@@ -10,6 +10,7 @@ interface HistoricalReplayProps {
     setup: string;
     outcome: string;
     explanation: string;
+    lesson?: string;
   };
 }
 
@@ -93,7 +94,7 @@ export function HistoricalReplay({ example }: HistoricalReplayProps) {
               <div className="border-t border-border/50 pt-3">
                 <h5 className="text-xs font-bold text-emerald-600 mb-1 uppercase tracking-wider">Lesson</h5>
                 <p className="text-sm text-foreground">
-                  {example.lesson}
+                  {example.lesson || example.explanation}
                 </p>
               </div>
             </div>

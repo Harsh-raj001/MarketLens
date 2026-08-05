@@ -90,15 +90,19 @@ export default function FloatingAIChat() {
                   <div className={`max-w-[85%] p-3 rounded-2xl ${msg.role === "user" ? "bg-teal-500 text-white rounded-br-sm shadow-sm" : "bg-white border border-slate-200 text-slate-800 rounded-bl-sm shadow-sm"}`}>
                     <div className="text-sm">
                       {typeof msg.content === "string" ? (
-                        <ReactMarkdown className="prose prose-sm prose-teal max-w-none dark:prose-invert">
-                          {msg.content}
-                        </ReactMarkdown>
+                        <div className="prose prose-sm prose-teal max-w-none dark:prose-invert">
+                          <ReactMarkdown>
+                            {msg.content}
+                          </ReactMarkdown>
+                        </div>
                       ) : (
                         <div className="space-y-2">
                           <p className="font-bold">{msg.content.topic}</p>
-                          <ReactMarkdown className="prose prose-sm prose-teal max-w-none dark:prose-invert">
-                            {msg.content.description}
-                          </ReactMarkdown>
+                          <div className="prose prose-sm prose-teal max-w-none dark:prose-invert">
+                            <ReactMarkdown>
+                              {msg.content.description}
+                            </ReactMarkdown>
+                          </div>
                         </div>
                       )}
                     </div>
